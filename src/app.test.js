@@ -1,13 +1,14 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import app from './app';
 import escapeHtml from 'escape-html';
+import app from './app';
 
 
 /* global setTimeout */
+/* eslint react/prop-types: 0 */
 
 
-const View = ({ test }) => (
+const SimpleView = ({ test }) => (
   <div>{test.name}</div>
 );
 
@@ -27,7 +28,7 @@ describe('app', () => {
       },
 
       effects: {
-        *mount(_, { put }) {
+        * mount(_, { put }) {
           yield sleep(10);
           yield put({ type: 'load', payload: { name: 'world' } });
         }
@@ -35,7 +36,7 @@ describe('app', () => {
     };
 
 
-    const App = app({ model, view: View });
+    const App = app({ model, view: SimpleView });
     const wrapper = mount(<App />);
     expect(wrapper.html()).toBe('<div>hello</div>');
     await sleep(20);
@@ -52,7 +53,7 @@ describe('app', () => {
       namespace: 'test',
       state: { name: 'test' }
     };
-    app({ model, view: View, mount: true });
+    app({ model, view: SimpleView, mount: true });
     expect(root.innerHTML).toBe('<div>test</div>');
   });
 
@@ -84,12 +85,12 @@ describe('app', () => {
     document.body.appendChild(node);
 
     node.classList.add('app');
-    app({ model, view: View, mount: '.app' });
+    app({ model, view: SimpleView, mount: '.app' });
     expect(node.innerHTML).toBe('<div>foo</div>');
 
 
     const other = document.createElement('div');
-    app({ model, view: View, mount: other });
+    app({ model, view: SimpleView, mount: other });
     expect(node.innerHTML).toBe('<div>foo</div>');
   });
 
