@@ -53,20 +53,15 @@ function withMount({ selector, models }) {
 
 
 function render(App, root) {
-  if (typeof document !== 'undefined') {
-    ReactDOM.render(<App />, root);
-  }
+  ReactDOM.render(<App />, root);
 }
 
 
 function getRoot(mount) {
-  if (!mount || typeof document === 'undefined') {
-    return null;
-  }
   if (typeof mount === 'string') {
     return document.querySelector(mount);
   }
-  if (mount.nodeType === 1) {
+  if (mount && mount.nodeType === 1) {
     return mount;
   }
   return document.getElementById('app');
