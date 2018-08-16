@@ -6,7 +6,8 @@
   "scripts": {
     "lint": "eslint src",
     "test": "jest src",
-    "test:watch": "jest src --watch"
+    "test:watch": "jest src --watch",
+    "cov": "jest src --coverage"
   },
   "dependencies": {
     "@babel/core": "^7.0.0-rc",
@@ -24,6 +25,8 @@
     "copy-webpack-plugin": "^4.5.1",
     "css-loader": "^1.0.0",
     "dva-core": "^1.4.0",
+    "enzyme": "^3.4.2",
+    "enzyme-adapter-react-16": "^1.2.0",
     "eslint": "^5.3.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",

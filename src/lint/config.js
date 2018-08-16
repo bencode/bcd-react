@@ -8,6 +8,7 @@ module.exports = {
   },
 
   globals: {
+    describe: true,
     expect: true,
     test: true
   },
