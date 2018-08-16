@@ -1,0 +1,26 @@
+{
+  "name": "how-react-app",
+  "version": "0.0.1",
+  "description": "create react app with no configuration.",
+  "main": "src/index.js",
+  "scripts": {
+    "lint": "eslint src",
+    "test": "jest src"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+  },
+  "peerDependencies": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bencode/how-react-app.git"
+  },
+  "author": "bencode@163.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bencode/how-react-app/issues"
+  },
+  "homepage": "https://github.com/bencode/how-react-app#readme"
+}
