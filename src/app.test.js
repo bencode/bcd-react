@@ -3,31 +3,44 @@ import { mount } from 'enzyme';
 import app from './app';
 
 
+/* global setTimeout */
+
+
 describe('app', () => {
-  test('create app', () => {
+  test('create app', async() => {
     const model = {
-      namespace: 'app',
-      state: {},
+      namespace: 'test',
+      state: {
+        name: 'hello'
+      },
 
       reducers: {
-        init() {
-          console.log('hello');
+        load(state, { payload }) {
+          return { ...state, ...payload };
         }
       },
 
       effects: {
         *mount(_, { put }) {
-          yield put({ type: 'load', payload: { name: 'hello' } });
+          yield sleep(10);
+          yield put({ type: 'load', payload: { name: 'world' } });
         }
       }
     };
 
-    const view = () => (
-      <div>Hello</div>
+    const View = ({ test }) => (
+      <div>{test.name}</div>
     );
 
-    const App = app({ model, view });
+    const App = app({ model, view: View });
     const wrapper = mount(<App />);
-    expect(wrapper.html()).toBe('<div>Hello</div>');
+    expect(wrapper.html()).toBe('<div>hello</div>');
+    await sleep(20);
+    expect(wrapper.html()).toBe('<div>world</div>');
   });
 });
+
+
+function sleep(time) {
+  return new Promise(resolve => setTimeout(resolve, time));
+}
