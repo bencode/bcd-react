@@ -10,14 +10,17 @@ const debug = require('debug')('webpack/config');
 
 module.exports = function({
   env,
-  srcRoot, distRoot,
-  publicPath
+  srcPath, distPath,
+  pagesPath, publicPath
 }) {
+  pagesPath = pagesPath || pathUtil.join(srcPath, 'pages');
+  publicPath = publicPath || pathUtil.join(srcPath, 'public');
+
   return {
     mode: env,
-    entry: getEntry(srcRoot),
+    entry: getEntry(pagesPath),
     output: {
-      path: distRoot,
+      path: distPath,
       filename: '[name]-[hash].js',
       chunkFilename: '[id]-[chunkhash].js',
       publicPath: env === 'development' ? '/' : (publicPath || '/')
@@ -25,16 +28,15 @@ module.exports = function({
     module: {
       rules: getRules(),
     },
-    plugins: getPlugins(srcRoot),
+    plugins: getPlugins({ publicPath }),
     resolve: {
-      alias: getAlias(srcRoot)
+      alias: getAlias(srcPath, { ignore: [pagesPath, publicPath] })
     }
   };
 };
 
 
-function getEntry(srcRoot) {
-  const pagesPath = pathUtil.join(srcRoot, 'pages');
+function getEntry(pagesPath) {
   const pages = fs.readdirSync(pagesPath).filter(name => (/^[-\w]+$/).test(name));
   return pages.reduce((acc, name) => {
     acc[name] = pathUtil.join(pagesPath, name);
@@ -110,29 +112,28 @@ function getRules() {
 //~ getRules
 
 
-function getPlugins(srcRoot) {
+function getPlugins({ publicPath }) {
   return [
     // new MiniCssExtractPlugin({
     //   filename: '[name]-[chunkhash].css'
     // }),
 
     new CopyWebpackPlugin([{
-      from: pathUtil.join(srcRoot, 'public/')
+      from: publicPath
     }])
   ];
 }
 
 
-function getAlias(srcRoot) {
-  const dirs = fs.readdirSync(srcRoot).filter(name => {
-    const path = pathUtil.join(srcRoot, name);
-    return fs.statSync(path).isDirectory();
-  }).filter(name => {
-    const relative = pathUtil.join(srcRoot, '..');
-    return !resolveFrom.slient(relative, name);
+function getAlias(srcPath, { ignore }) {
+  const relative = pathUtil.join(srcPath, '..');
+  const dirs = fs.readdirSync(srcPath).filter(name => {
+    const path = pathUtil.join(srcPath, name);
+    return fs.statSync(path).isDirectory() &&
+      !ignore.includes(path) && !resolveFrom.slice(relative, name);
   });
   return dirs.reduce((acc, name) => {
-    acc[name] = pathUtil.join(srcRoot, name);
+    acc[name] = pathUtil.join(srcPath, name);
     return acc;
   }, {});
 }
