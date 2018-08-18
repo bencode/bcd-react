@@ -8,6 +8,9 @@ const debug = require('debug')('webpack/config');
 // const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 
+// refer https://github.com/facebook/create-react-app/blob/next/packages/react-scripts/config/webpack.config.prod.js
+
+
 module.exports = function({
   env,
   srcPath, distPath,
@@ -51,60 +54,56 @@ function getRules() {
       test: /\.(sa|sc|c)ss$/,
       use: [
         // MiniCssExtractPlugin.loader,
-        'css-loader',
+        require.resolve('css-loader'),
         {
-          loader: 'postcss-loader',
+          loader: require.resolve('postcss-loader'),
           options: {
             plugins: [
               require('autoprefixer')()
             ]
           }
         },
-        'sass-loader'
+        require.resolve('sass-loader')
       ]
     },
 
     {
-      test: /\.(jpe?g|png|gif)$/i,
+      test: /\.(jpe?g|png|gif|svg)$/i,
       use: [
-        'file-loader?hash=sha512&digest=hex&name=[hash].[ext]',
-        // 'image-webpack-loader?{bypassOnDebug:true,options:{optimizationLevel:8},gifsicle:{interlaced:false}}'
+        {
+          loader: require.resolve('file-loader'),
+          options: {
+            name: '[name].[hash:8].[ext]'
+          }
+        }
       ]
-    },
-
-    {
-      test: /\.(woff|woff2|eot|ttf)$/,
-      loader: 'url-loader?limit=8192'
-    },
-
-    {
-      test: /\.svg$/,
-      use: 'file-loader'
     },
 
     {
       test: /\.js$/,
       use: [
+        require.resolve('thread-loader'),
         {
-          loader: 'babel-loader',
+          loader: require.resolve('babel-loader'),
           options: {
-            presets: [
-              ['@babel/preset-env', {
-                targets: { browsers: '> 1%, last 2 versions' }
-              }],
-              'react'
-            ],
+            babelrc: false,
+            presets: [require.resolve('babel-preset-react-app')],
             plugins: [
-              'transform-class-properties',
-              '@babel/plugin-syntax-dynamic-import',
-              ['@babel/plugin-transform-runtime', {
-                corejs: false,
-                helpers: false,
-                regenerator: true,
-              }]
-            ]
-          }
-        }
+              [
+                // require.resolve('babel-plugin-named-asset-import'),
+                {
+                  loaderMap: {
+                    svg: {
+                      ReactComponent: 'svgr/webpack![path]',
+                    },
+                  },
+                },
+              ],
+            ],
+            compact: true,
+            highlightCode: true,
+          },
+        },
       ]
     }
   ];
@@ -113,15 +112,17 @@ function getRules() {
 
 
 function getPlugins({ publicPath }) {
-  return [
-    // new MiniCssExtractPlugin({
-    //   filename: '[name]-[chunkhash].css'
-    // }),
+  const list = [];
 
-    new CopyWebpackPlugin([{
-      from: publicPath
-    }])
-  ];
+  // list.push(new MiniCssExtractPlugin({
+  //   filename: '[name]-[chunkhash].css'
+  // }));
+
+  if (fs.existsSync(publicPath)) {
+    list.push(new CopyWebpackPlugin([{ from: publicPath }]));
+  }
+
+  return list;
 }
 
 
