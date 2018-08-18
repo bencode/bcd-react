@@ -26,9 +26,11 @@ yarn add --dev eslint eslint-config-how-react-app
 ```json
 {
   "scripts": {
-    "lint": "eslint src",   # 根据需要可更换目录
+    "lint": "eslint src"
   }
 }
 ```
 
-然后就可以使用 `yarn lint` 运行eslint来检测js代码。
+*(可能需要修改要检测的代码目录名)*
+
+然后就可以使用命令 `yarn lint` 运行eslint来检测js代码。
