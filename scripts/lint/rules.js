@@ -1,7 +1,7 @@
 module.exports = {
   'arrow-parens': [2, 'as-needed'],
   'arrow-body-style': 0,  // [2, 'as-needed'],
-  'comma-dangle': [2, 'never'],
+  'comma-dangle': 0,
   'func-names': 0,
   'global-require': 0,
   'guard-for-in': 0,
