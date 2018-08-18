@@ -26,7 +26,7 @@ yarn add --dev eslint eslint-config-how-react-app
 ```json
 {
   "scripts": {
-    "lint": "eslint src",   // 根据需要可更换目录
+    "lint": "eslint src",   # 根据需要可更换目录
   }
 }
 ```
