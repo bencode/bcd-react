@@ -4,8 +4,8 @@
   "description": "create react app with no configuration.",
   "main": "src/index.js",
   "scripts": {
-    "lint": "eslint src",
-    "test": "jest src",
+    "lint": "eslint src scripts",
+    "test": "jest src scripts",
     "test:watch": "jest src --watch",
     "cov": "jest src --coverage"
   },
