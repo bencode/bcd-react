@@ -3,6 +3,8 @@
 
 const pathUtil = require('path');
 const minimist = require('minimist');
+const range = require('lodash.range');
+
 
 process.on('unhandledRejection', err => {
   throw err;
@@ -21,6 +23,7 @@ function main() {
     return -1;
   }
 
-  const cmd = require(cmdPaht);
-  return cmd(...args, opts);
+  const cmd = require(cmdPath);
+  const cmdArgs = range(cmd.length - 1).map((v, index) => args[index]);
+  return cmd(...cmdArgs, opts);
 }

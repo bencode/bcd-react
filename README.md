@@ -5,13 +5,11 @@
 
 ## eslint
 
-在项目中添加eslint支持
-
-```
+```shell
 yarn add --dev eslint eslint-config-how-react-app
 ```
 
-添加文件 `.eslintrc`，内容如下：
+添加文件 `.eslintrc`：
 
 ```js
 {
@@ -31,6 +29,6 @@ yarn add --dev eslint eslint-config-how-react-app
 }
 ```
 
-*(可能需要修改要检测的代码目录名)*
+*(可能需要修改代码目录名)*
 
 然后就可以使用命令 `yarn lint` 运行eslint来检测js代码。
