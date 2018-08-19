@@ -1,6 +1,6 @@
 {
   "name": "eslint-config-bcd-react",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "config.js",
   "dependencies": {
     "babel-eslint": "^8.2.6",
