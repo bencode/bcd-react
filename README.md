@@ -1,1 +1,1 @@
-# how-react-app
+# bcd-react

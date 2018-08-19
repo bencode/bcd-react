@@ -1,7 +1,7 @@
 {
-  "name": "how-react-app",
+  "name": "bcd-react",
   "version": "0.0.2",
-  "description": "start from create-react-app",
+  "description": "",
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint src scripts",
