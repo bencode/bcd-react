@@ -1,6 +1,6 @@
 {
-  "name": "eslint-config-how-react-app",
-  "version": "0.2.0",
+  "name": "eslint-config-bcd-react",
+  "version": "0.1.0",
   "main": "config.js",
   "dependencies": {
     "eslint-config-react-app": "^2.1.0"
@@ -8,12 +8,12 @@
   "devDependencies": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bencode/how-react-app.git"
+    "url": "git+https://github.com/bencode/bcd-react.git"
   },
   "author": "bencode@163.com",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bencode/how-react-app/issues"
+    "url": "https://github.com/bencode/bcd-react/issues"
   },
-  "homepage": "https://github.com/bencode/how-react-app#readme"
+  "homepage": "https://github.com/bencode/bcd-react#readme"
 }
