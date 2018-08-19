@@ -30,12 +30,12 @@
   "peerDependencies": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bencode/how-react-app.git"
+    "url": "git+https://github.com/bencode/bde-react.git"
   },
   "author": "bencode@163.com",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bencode/how-react-app/issues"
+    "url": "https://github.com/bencode/bcd-react/issues"
   },
-  "homepage": "https://github.com/bencode/how-react-app#readme"
+  "homepage": "https://github.com/bencode/bcd-react#readme"
 }
