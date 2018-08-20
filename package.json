@@ -1,6 +1,6 @@
 {
   "name": "bcd-react",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "不隐藏、无配置、快速创建react项目",
   "main": "src/index.js",
   "scripts": {
@@ -42,6 +42,7 @@
     "babel-jest": "^23.4.2",
     "enzyme": "^3.4.4",
     "enzyme-adapter-react-16": "^1.2.0",
+    "eslint": "^5.4.0",
     "eslint-config-bcd-react": "^1.0.2",
     "jest": "^23.5.0",
     "webpack": "^4.16.5"

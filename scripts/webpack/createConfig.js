@@ -6,7 +6,6 @@ const ManifestPlugin = require('webpack-manifest-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-const debug = require('debug')('webpack/config');
 // const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 
@@ -19,6 +18,7 @@ module.exports = function({
   pagesPath, publicPath,
   shouldUseSourceMap
 }) {
+  env = env || process.env.NODE_ENV || 'development';
   srcPath = pathUtil.resolve(srcPath);
   distPath = pathUtil.resolve(distPath);
   pagesPath = pagesPath || pathUtil.join(srcPath, 'pages');
