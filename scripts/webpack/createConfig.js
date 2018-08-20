@@ -61,6 +61,7 @@ function getRules() {
       test: /\.(sa|sc|c)ss$/,
       use: [
         // MiniCssExtractPlugin.loader,
+        require.resolve('style-loader'),
         require.resolve('css-loader'),
         {
           loader: require.resolve('postcss-loader'),
