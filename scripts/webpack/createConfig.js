@@ -2,16 +2,22 @@ const pathUtil = require('path');
 const fs = require('fs');
 const resolveFrom = require('resolve-from');
 const webpack = require('webpack');
+const ManifestPlugin = require('webpack-manifest-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const debug = require('debug')('webpack/config');
 // const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 
+// refer https://github.com/facebook/create-react-app/blob/next/packages/react-scripts/config/webpack.config.prod.js
+
+
 module.exports = function({
   env,
   srcPath, distPath,
-  pagesPath, publicPath
+  pagesPath, publicPath,
+  shouldUseSourceMap
 }) {
   srcPath = pathUtil.resolve(srcPath);
   distPath = pathUtil.resolve(distPath);
@@ -21,16 +27,18 @@ module.exports = function({
   return {
     mode: env,
     entry: getEntry(pagesPath),
+    devtool: env === 'development' ? 'cheap-module-source-map' :
+      shouldUseSourceMap ? 'source-map' : false,
     output: {
       path: distPath,
       filename: '[name].js',
       chunkFilename: '[id]-[chunkhash].js',
-      publicPath: env === 'development' ? '/' : (publicPath || '/')
+      publicPath: publicPath || '/'
     },
     module: {
       rules: getRules(),
     },
-    plugins: getPlugins({ publicPath }),
+    plugins: getPlugins({ env, publicPath }),
     resolve: {
       alias: getAlias(srcPath, { ignore: [pagesPath, publicPath] })
     }
@@ -108,7 +116,7 @@ function getRules() {
 //~ getRules
 
 
-function getPlugins({ publicPath }) {
+function getPlugins({ env, publicPath }) {
   const list = [];
 
   // list.push(new MiniCssExtractPlugin({
@@ -119,7 +127,31 @@ function getPlugins({ publicPath }) {
     list.push(new CopyWebpackPlugin([{ from: publicPath }]));
   }
 
+  if (env === 'production') {
+    list.push(...getProdPlugins({ publicPath }));
+  }
+
   return list;
+}
+
+
+function getProdPlugins({ publicPath }) {
+  return [
+    /** 定义一些环境变量 **/
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': '"production"',
+    }),
+
+    new ManifestPlugin({
+      fileName: 'asset-manifest.json',
+      publicPath: publicPath,
+    }),
+
+    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+
+    /** 统计打包后的模块构成 **/
+    new BundleAnalyzerPlugin({ analyzerMode: 'static' })
+  ];
 }
 
 
@@ -128,7 +160,7 @@ function getAlias(srcPath, { ignore }) {
   const dirs = fs.readdirSync(srcPath).filter(name => {
     const path = pathUtil.join(srcPath, name);
     return fs.statSync(path).isDirectory() &&
-      !ignore.includes(path) && !resolveFrom.slice(relative, name);
+      !ignore.includes(path) && !resolveFrom.silent(relative, name);
   });
   return dirs.reduce((acc, name) => {
     acc[name] = pathUtil.join(srcPath, name);
