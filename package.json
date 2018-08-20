@@ -1,7 +1,7 @@
 {
   "name": "bcd-react",
-  "version": "0.0.2",
-  "description": "",
+  "version": "0.1.0",
+  "description": "不隐藏、无配置、快速创建react项目",
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint src scripts",
@@ -11,25 +11,38 @@
   },
   "dependencies": {
     "@babel/core": "^7.0.0-rc.1",
+    "@babel/plugin-syntax-dynamic-import": "^7.0.0-rc.1",
+    "@babel/plugin-transform-runtime": "^7.0.0-rc.1",
     "@babel/preset-env": "^7.0.0-rc.1",
     "@babel/preset-react": "^7.0.0-rc.1",
+    "autoprefixer": "^9.1.2",
     "babel-core": "^7.0.0-0",
     "babel-jest": "^23.4.2",
+    "babel-loader": "^7.1.5",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "copy-webpack-plugin": "^4.5.2",
+    "css-loader": "^1.0.0",
     "dva-core": "^1.4.0",
     "enzyme": "^3.4.4",
     "enzyme-adapter-react-16": "^1.2.0",
     "escape-html": "^1.0.3",
+    "file-loader": "^1.1.11",
     "jest": "^23.5.0",
+    "postcss-loader": "^3.0.0",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
     "react-loadable": "^5.5.0",
     "react-redux": "^5.0.7",
-    "regenerator-runtime": "^0.12.1"
+    "regenerator-runtime": "^0.12.1",
+    "sass-loader": "^7.1.0"
   },
   "devDependencies": {
-    "eslint-config-bcd-react": "^0.1.0"
+    "eslint-config-bcd-react": "^1.0.2",
+    "webpack": "^4.16.5"
   },
-  "peerDependencies": {},
+  "peerDependencies": {
+    "webpack": "^4.16.5"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bencode/bde-react.git"

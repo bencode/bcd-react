@@ -8,14 +8,13 @@ const debug = require('debug')('webpack/config');
 // const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 
-// refer https://github.com/facebook/create-react-app/blob/next/packages/react-scripts/config/webpack.config.prod.js
-
-
 module.exports = function({
   env,
   srcPath, distPath,
   pagesPath, publicPath
 }) {
+  srcPath = pathUtil.resolve(srcPath);
+  distPath = pathUtil.resolve(distPath);
   pagesPath = pagesPath || pathUtil.join(srcPath, 'pages');
   publicPath = publicPath || pathUtil.join(srcPath, 'public');
 
@@ -24,7 +23,7 @@ module.exports = function({
     entry: getEntry(pagesPath),
     output: {
       path: distPath,
-      filename: '[name]-[hash].js',
+      filename: '[name].js',
       chunkFilename: '[id]-[chunkhash].js',
       publicPath: env === 'development' ? '/' : (publicPath || '/')
     },
@@ -68,7 +67,7 @@ function getRules() {
     },
 
     {
-      test: /\.(jpe?g|png|gif|svg)$/i,
+      test: /\.(jpe?g|png|gif)$/i,
       use: [
         {
           loader: require.resolve('file-loader'),
@@ -82,28 +81,26 @@ function getRules() {
     {
       test: /\.js$/,
       use: [
-        require.resolve('thread-loader'),
         {
           loader: require.resolve('babel-loader'),
           options: {
-            babelrc: false,
-            presets: [require.resolve('babel-preset-react-app')],
-            plugins: [
-              [
-                // require.resolve('babel-plugin-named-asset-import'),
-                {
-                  loaderMap: {
-                    svg: {
-                      ReactComponent: 'svgr/webpack![path]',
-                    },
-                  },
-                },
-              ],
+            presets: [
+              [require.resolve('@babel/preset-env'), {
+                targets: { browsers: '> 1%, last 2 versions' }
+              }],
+              require.resolve('@babel/preset-react')
             ],
-            compact: true,
-            highlightCode: true,
-          },
-        },
+            plugins: [
+              require.resolve('babel-plugin-transform-class-properties'),
+              require.resolve('@babel/plugin-syntax-dynamic-import'),
+              [require.resolve('@babel/plugin-transform-runtime'), {
+                corejs: false,
+                helpers: false,
+                regenerator: true,
+              }]
+            ]
+          }
+        }
       ]
     }
   ];
