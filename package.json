@@ -1,54 +1,14 @@
 {
   "name": "bcd-react",
-  "version": "1.0.2",
-  "description": "不隐藏、无配置、快速创建react项目",
+  "version": "2.0.0",
+  "description": "不隐藏、无配置、最佳化快速创建react项目",
   "main": "src/index.js",
   "scripts": {
-    "lint": "eslint src scripts",
-    "test": "jest src scripts",
-    "test:watch": "jest src --watch",
-    "cov": "jest src --coverage"
   },
   "dependencies": {
-    "@babel/core": "^7.0.0-rc.1",
-    "@babel/plugin-syntax-dynamic-import": "^7.0.0-rc.1",
-    "@babel/plugin-transform-runtime": "^7.0.0-rc.1",
-    "@babel/preset-env": "^7.0.0-rc.1",
-    "@babel/preset-react": "^7.0.0-rc.1",
-    "autoprefixer": "^9.1.2",
-    "babel-core": "^7.0.0-0",
-    "babel-loader": "^7.1.5",
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "copy-webpack-plugin": "^4.5.2",
-    "css-loader": "^1.0.0",
-    "dva-core": "^1.4.0",
-    "escape-html": "^1.0.3",
-    "file-loader": "^1.1.11",
-    "node-sass": "^4.9.3",
-    "postcss-loader": "^3.0.0",
-    "prop-types": "^15.6.2",
-    "react": "^16.4.2",
-    "react-dom": "^16.4.2",
-    "react-loadable": "^5.5.0",
-    "react-redux": "^5.0.7",
-    "regenerator-runtime": "^0.12.1",
-    "resolve-from": "^4.0.0",
-    "sass-loader": "^7.1.0",
-    "style-loader": "^0.22.1",
-    "webpack-bundle-analyzer": "^2.13.1",
-    "webpack-manifest-plugin": "^2.0.3"
   },
   "devDependencies": {
-    "babel-jest": "^23.4.2",
-    "enzyme": "^3.4.4",
-    "enzyme-adapter-react-16": "^1.2.0",
-    "eslint": "^5.4.0",
-    "eslint-config-bcd-react": "^1.0.2",
-    "jest": "^23.5.0",
-    "webpack": "^4.16.5"
-  },
-  "peerDependencies": {
-    "webpack": "^4.16.5"
+    "lerna": "^3.1.2"
   },
   "repository": {
     "type": "git",

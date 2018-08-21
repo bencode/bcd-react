@@ -1,0 +1,16 @@
+{
+  "name": "bcd-react-app",
+  "version": "1.0.0",
+  "description": "最佳化构建react app",
+  "main": "src/index.js",
+  "scripts": {
+    "lint": "eslint src",
+    "test": "jest src",
+    "test:watch": "jest src --watch",
+    "cov": "jest src --coverage"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+  }
+}
