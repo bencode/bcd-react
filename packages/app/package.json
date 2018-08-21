@@ -5,12 +5,14 @@
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint src",
-    "test": "jest src",
-    "test:watch": "jest src --watch",
-    "cov": "jest src --coverage"
+    "test": "test-mate",
+    "cov": "test-mate --coverage"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
-  }
+    "eslint": "^5.4.0",
+    "eslint-config-bcd-react": "^1.0.2",
+    "react-test-mate": "^2.0.2"
+  },
+  "license": "MIT"
 }
