@@ -1,6 +1,6 @@
 {
   "name": "bcd-react-webpack",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "create webpack config for react application",
   "main": "index.js",
   "scripts": {},
@@ -25,8 +25,6 @@
     "style-loader": "^0.22.1",
     "webpack-bundle-analyzer": "^2.13.1",
     "webpack-manifest-plugin": "^2.0.3"
-  },
-  "devDependencies": {
   },
   "peerDependencies": {
     "webpack": "^4.16.5"
