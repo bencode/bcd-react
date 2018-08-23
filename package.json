@@ -3,10 +3,8 @@
   "version": "2.0.0",
   "description": "不隐藏、无配置、最佳化快速创建react项目",
   "main": "src/index.js",
-  "scripts": {
-  },
-  "dependencies": {
-  },
+  "scripts": {},
+  "dependencies": {},
   "devDependencies": {
     "lerna": "^3.1.2"
   },
