@@ -38,7 +38,7 @@ module.exports = function({
       publicPath: publicPath || '/'
     },
     module: {
-      rules: getRules({ env, extractCss })
+      rules: getRules({ env, extractCss, shouldUseSourceMap })
     },
     plugins: getPlugins({ env, publicPath, extractCss }),
     optimization: env === 'development' ? {} : getOptimization({ shouldUseSourceMap }),
@@ -58,25 +58,20 @@ function getEntry(pagesPath) {
 }
 
 
-function getRules({ extractCss }) {
+function getRules(opts) {
   return [
     {
-      test: /\.(sa|sc|c)ss$/,
-      use: [
-        extractCss ? MiniCssExtractPlugin.loader : require.resolve('style-loader'),
-        require.resolve('css-loader'),
-        {
-          loader: require.resolve('postcss-loader'),
-          options: {
-            plugins: [
-              require('autoprefixer')()
-            ]
-          }
-        },
-        require.resolve('sass-loader')
-      ]
+      test: /\.css$/,
+      use: getStyleLoader(opts)
     },
-
+    {
+      test: /\.scss$/,
+      use: getStyleLoader({ ...opts, processor: 'sass-loader' })
+    },
+    {
+      test: /\.less$/,
+      use: getStyleLoader({ ...opts, processor: 'less-loader' })
+    },
     {
       test: /\.(jpe?g|png|gif)$/i,
       use: [
@@ -88,9 +83,21 @@ function getRules({ extractCss }) {
         }
       ]
     },
-
     {
-      test: /\.js$/,
+      test: /\.jsx?$/,
+      enforce: 'pre',
+      exclude: [/[/\\\\]node_modules[/\\\\]/],
+      use: [
+        {
+          loader: require.resolve('eslint-loader'),
+          options: {
+            eslintPath: require.resolve('eslint')
+          }
+        }
+      ]
+    },
+    {
+      test: /\.jsx?$/,
       use: [
         {
           loader: require.resolve('babel-loader'),
@@ -118,6 +125,30 @@ function getRules({ extractCss }) {
 }
 //~ getRules
 
+
+function getStyleLoader({ env, extractCss, processor, shouldUseSourceMap }) {
+  const loaders = [
+    extractCss ? MiniCssExtractPlugin.loader : require.resolve('style-loader'),
+    require.resolve('css-loader'),
+    {
+      loader: require.resolve('postcss-loader'),
+      options: {
+        plugins: [
+          require('autoprefixer')()
+        ]
+      }
+    }
+  ];
+  if (processor) {
+    loaders.push({
+      loader: require.resolve(processor),
+      options: {
+        sourceMap: env === 'development' || shouldUseSourceMap
+      }
+    });
+  }
+  return loaders;
+}
 
 function getOptimization({ shouldUseSourceMap }) {
   return {
