@@ -24,7 +24,6 @@ module.exports = function({
   srcPath = pathUtil.resolve(srcPath);
   distPath = pathUtil.resolve(distPath);
   pagesPath = pagesPath || pathUtil.join(srcPath, 'pages');
-  publicPath = publicPath || pathUtil.join(srcPath, 'public');
 
   return {
     mode: env,
@@ -40,7 +39,7 @@ module.exports = function({
     module: {
       rules: getRules({ env, extractCss, shouldUseSourceMap })
     },
-    plugins: getPlugins({ env, publicPath, extractCss }),
+    plugins: getPlugins({ env, srcPath, publicPath, extractCss }),
     optimization: env === 'development' ? {} : getOptimization({ shouldUseSourceMap }),
     resolve: {
       alias: getAlias(srcPath, { ignore: [pagesPath, publicPath] })
@@ -194,7 +193,7 @@ function getOptimization({ shouldUseSourceMap }) {
 }
 
 
-function getPlugins({ env, publicPath, extractCss }) {
+function getPlugins({ env, srcPath, publicPath, extractCss }) {
   const list = [];
 
   extractCss
@@ -204,8 +203,9 @@ function getPlugins({ env, publicPath, extractCss }) {
     })
   );
 
-  if (fs.existsSync(publicPath)) {
-    list.push(new CopyWebpackPlugin([{ from: publicPath }]));
+  const publicDistPath = pathUtil.join(srcPath, 'public');
+  if (fs.existsSync(publicDistPath)) {
+    list.push(new CopyWebpackPlugin([{ from: publicDistPath }]));
   }
 
   if (env === 'production') {
