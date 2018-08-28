@@ -1,6 +1,6 @@
 {
   "name": "bcd-react-webpack",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "create webpack config for react application",
   "main": "lib/index.js",
   "scripts": {
@@ -19,7 +19,6 @@
     "babel-plugin-transform-class-properties": "^6.24.1",
     "copy-webpack-plugin": "^4.5.2",
     "css-loader": "^1.0.0",
-    "eslint": "^5.4.0",
     "eslint-loader": "^2.1.0",
     "file-loader": "^1.1.11",
     "less": "^3.8.1",
@@ -39,6 +38,7 @@
     "webpack-manifest-plugin": "^2.0.3"
   },
   "devDependencies": {
+    "eslint": "^5.4.0",
     "eslint-config-bce": "^4.0.0"
   },
   "license": "MIT"
