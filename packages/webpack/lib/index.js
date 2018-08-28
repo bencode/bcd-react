@@ -17,7 +17,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 
 module.exports = function({
   env,
-  srcPath, distPath,
+  srcPath, distPath, assetsDir,
   pagesPath, publicPath,
   shouldUseSourceMap,
   digest = true, extractCss = true,
@@ -28,11 +28,12 @@ module.exports = function({
   srcPath = pathUtil.resolve(srcPath || 'src');
   distPath = pathUtil.resolve(distPath || 'dist');
   pagesPath = pagesPath || pathUtil.join(srcPath, 'pages');
+  assetsDir = ensureAssetsDir(assetsDir);
 
   const entry = getEntry(pagesPath);
 
   const config = {
-    devServer: createDevServerConfig(),
+    devServer: createDevServerConfig({ distPath }),
     mode: env,
     bail: true,
     entry,
@@ -40,14 +41,16 @@ module.exports = function({
       : shouldUseSourceMap ? 'source-map' : false,
     output: {
       path: distPath,
-      filename: digest ? '[name].[chunkhash:8].js' : '[name].js',
-      chunkFilename: '[name]-[chunkhash:8].chunk.js',
+      filename: digest ? `${assetsDir.js}[name].[chunkhash:8].js` : `${assetsDir.js}[name].js`,
+      chunkFilename: `${assetsDir.js}[name]-[chunkhash:8].chunk.js`,
       publicPath: publicPath || '/'
     },
     module: {
       rules: getRules({ env, extractCss, shouldUseSourceMap })
     },
-    plugins: getPlugins({ env, digest, srcPath, publicPath, extractCss, entry, htmlWebpackPlugin }),
+    plugins: getPlugins({
+      env, digest, srcPath, publicPath, extractCss, assetsDir, entry, htmlWebpackPlugin
+    }),
     optimization: getOptimization({ env, shouldUseSourceMap }),
     resolve: {
       alias: getAlias(srcPath, { ignore: [pagesPath, publicPath] })
@@ -56,6 +59,17 @@ module.exports = function({
 
   return extra ? merge(config, extra) : config;
 };
+
+
+function ensureAssetsDir(assetsDir) {
+  if (!assetsDir) {
+    return { js: 'js/', css: 'css/' };
+  }
+  if (typeof assetsDir === 'string') {
+    return { js: assetsDir, css: assetsDir };
+  }
+  return { js: assetsDir.js || 'js/', css: assetsDir.css || 'css/' };
+}
 
 
 function createDevServerConfig() {
@@ -238,7 +252,10 @@ function getOptimization({ env, shouldUseSourceMap }) {
 }
 
 
-function getPlugins({ env, digest, srcPath, publicPath, extractCss, entry, htmlWebpackPlugin }) {
+function getPlugins({
+  env, digest, srcPath, publicPath, extractCss,
+  assetsDir, entry, htmlWebpackPlugin
+}) {
   const list = [];
 
   if (htmlWebpackPlugin !== false) {
@@ -249,8 +266,8 @@ function getPlugins({ env, digest, srcPath, publicPath, extractCss, entry, htmlW
   if (extractCss) {
     list.push(
       new MiniCssExtractPlugin({
-        filename: digest ? '[name].[contenthash:8].css' : '[name].css',
-        chunkFilename: '[name].[contenthash:8].chunk.css'
+        filename: digest ? `${assetsDir.css}[name].[contenthash:8].css` : `${assetsDir.css}[name].css`,
+        chunkFilename: `${assetsDir.css}[name].[contenthash:8].chunk.css`
       })
     );
   }
