@@ -2,6 +2,7 @@ const pathUtil = require('path');
 const fs = require('fs');
 const resolveFrom = require('resolve-from');
 const webpack = require('webpack');
+const merge = require('webpack-merge');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -19,16 +20,22 @@ module.exports = function({
   srcPath, distPath,
   pagesPath, publicPath,
   shouldUseSourceMap,
-  digest, extractCss
+  digest = true, extractCss = true,
+  htmlWebpackPlugin,
+  ...extra
 }) {
   env = env || process.env.NODE_ENV || 'development';
-  srcPath = pathUtil.resolve(srcPath);
-  distPath = pathUtil.resolve(distPath);
+  srcPath = pathUtil.resolve(srcPath || 'src');
+  distPath = pathUtil.resolve(distPath || 'dist');
   pagesPath = pagesPath || pathUtil.join(srcPath, 'pages');
 
-  return {
+  const entry = getEntry(pagesPath);
+
+  const config = {
+    devServer: createDevServerConfig(),
     mode: env,
-    entry: getEntry(pagesPath),
+    bail: true,
+    entry,
     devtool: env === 'development' ? 'cheap-module-source-map'
       : shouldUseSourceMap ? 'source-map' : false,
     output: {
@@ -40,13 +47,32 @@ module.exports = function({
     module: {
       rules: getRules({ env, extractCss, shouldUseSourceMap })
     },
-    plugins: getPlugins({ env, digest, srcPath, publicPath, extractCss }),
-    optimization: env === 'development' ? {} : getOptimization({ shouldUseSourceMap }),
+    plugins: getPlugins({ env, digest, srcPath, publicPath, extractCss, entry, htmlWebpackPlugin }),
+    optimization: getOptimization({ env, shouldUseSourceMap }),
     resolve: {
       alias: getAlias(srcPath, { ignore: [pagesPath, publicPath] })
     }
   };
+
+  return extra ? merge(config, extra) : config;
 };
+
+
+function createDevServerConfig() {
+  return {
+    disableHostCheck: true,
+    proxy: {
+      '/*': {
+        bypass: req => {
+          if (req.headers.accept.indexOf('html') !== -1) {
+            return '/index.html';
+          }
+          return null;
+        }
+      }
+    }
+  };
+}
 
 
 function getEntry(pagesPath) {
@@ -162,9 +188,20 @@ function getStyleLoader({ env, extractCss, processor, shouldUseSourceMap }) {
   return loaders;
 }
 
-function getOptimization({ shouldUseSourceMap }) {
+function getOptimization({ env, shouldUseSourceMap }) {
   return {
-    minimizer: [
+    splitChunks: {
+      chunks: 'async',
+      name: 'vendors',
+      minSize: 30000,
+      maxSize: 0,
+      minChunks: 1,
+      maxAsyncRequests: 5,
+      maxInitialRequests: 3
+    },
+    // runtimeChunk: true,
+
+    minimizer: env === 'development' ? [] : [
       new UglifyJsPlugin({
         uglifyOptions: {
           parse: {
@@ -197,21 +234,16 @@ function getOptimization({ shouldUseSourceMap }) {
         }
       })
     ]
-    // splitChunks: {
-    //   chunks: 'all',
-    //   name: 'vendors',
-    // },
-    // runtimeChunk: true,
   };
 }
 
 
-function getPlugins({ env, digest, srcPath, publicPath, extractCss }) {
+function getPlugins({ env, digest, srcPath, publicPath, extractCss, entry, htmlWebpackPlugin }) {
   const list = [];
 
-  const templatePath = pathUtil.join(srcPath, 'template.html');
-  if (fs.existsSync(templatePath)) {
-    list.push(createHtmlPlugin({ env, templatePath }));
+  if (htmlWebpackPlugin !== false) {
+    const items = createHtmlPlugins({ env, srcPath, entry, htmlWebpackPlugin });
+    list.push(...items);
   }
 
   if (extractCss) {
@@ -236,9 +268,16 @@ function getPlugins({ env, digest, srcPath, publicPath, extractCss }) {
 }
 
 
-function createHtmlPlugin({ env, templatePath }) {
-  const opts = env === 'development' ? null : {
-    minify: {
+function createHtmlPlugins({ env, srcPath, entry, htmlWebpackPlugin = {} }) {
+  const templatePath = htmlWebpackPlugin.template || pathUtil.join(srcPath, 'template.html');
+  if (!fs.existsSync(templatePath)) {
+    return [];
+  }
+
+  const opts = {
+    inject: true,
+    template: templatePath,
+    minify: env === 'development' ? null : {
       removeComments: true,
       collapseWhitespace: true,
       removeRedundantAttributes: true,
@@ -248,14 +287,17 @@ function createHtmlPlugin({ env, templatePath }) {
       keepClosingSlash: true,
       minifyJS: true,
       minifyCSS: true,
-      minifyURLs: true,
-    }
+      minifyURLs: true
+    },
+    ...htmlWebpackPlugin
   };
 
-  return new HtmlWebpackPlugin({
-    inject: true,
-    template: templatePath,
-    ...opts
+  return Object.keys(entry).map(name => {
+    return new HtmlWebpackPlugin({
+      filename: `${name}.html`,
+      chunks: ['vendors', name],
+      ...opts
+    });
   });
 }
 
