@@ -20,15 +20,16 @@ module.exports = function({
   srcPath, distPath, assetsDir,
   pagesPath, publicPath,
   shouldUseSourceMap,
-  digest = true, extractCss = true,
+  digest, extractCss = true, manifestFileName,
   htmlWebpackPlugin,
   ...extra
 }) {
   env = env || process.env.NODE_ENV || 'development';
   srcPath = pathUtil.resolve(srcPath || 'src');
   distPath = pathUtil.resolve(distPath || 'dist');
-  pagesPath = pagesPath || pathUtil.join(srcPath, 'pages');
   assetsDir = ensureAssetsDir(assetsDir);
+  pagesPath = pagesPath || pathUtil.join(srcPath, 'pages');
+  digest = digest === undefined ? env !== 'development' : digest;
 
   const entry = getEntry(pagesPath);
 
@@ -46,10 +47,11 @@ module.exports = function({
       publicPath: publicPath || '/'
     },
     module: {
-      rules: getRules({ env, extractCss, shouldUseSourceMap })
+      rules: getRules({ env, extractCss, assetsDir, shouldUseSourceMap })
     },
     plugins: getPlugins({
-      env, digest, srcPath, publicPath, extractCss, assetsDir, entry, htmlWebpackPlugin
+      env, digest, srcPath, publicPath, assetsDir,  // eslint-disable-line
+      extractCss, entry, htmlWebpackPlugin, manifestFileName // eslint-disable-line
     }),
     optimization: getOptimization({ env, shouldUseSourceMap }),
     resolve: {
@@ -62,13 +64,17 @@ module.exports = function({
 
 
 function ensureAssetsDir(assetsDir) {
-  if (!assetsDir) {
-    return { js: 'js/', css: 'css/' };
-  }
   if (typeof assetsDir === 'string') {
-    return { js: assetsDir, css: assetsDir };
+    return { js: assetsDir, css: assetsDir, media: assetsDir };
   }
-  return { js: assetsDir.js || 'js/', css: assetsDir.css || 'css/' };
+  if (!assetsDir) {
+    return { js: 'js/', css: 'css/', media: 'media/' };
+  }
+  return {
+    js: assetsDir.js || 'js/',
+    css: assetsDir.css || 'css/',
+    media: assetsDir.media || 'media/'
+  };
 }
 
 
@@ -130,7 +136,7 @@ function getRules(opts) {
         {
           loader: require.resolve('file-loader'),
           options: {
-            name: '[name].[hash:8].[ext]'
+            name: `${opts.assetsDir.media}[name].[hash:8].[ext]`
           }
         }
       ]
@@ -254,7 +260,7 @@ function getOptimization({ env, shouldUseSourceMap }) {
 
 function getPlugins({
   env, digest, srcPath, publicPath, extractCss,
-  assetsDir, entry, htmlWebpackPlugin
+  assetsDir, entry, htmlWebpackPlugin, manifestFileName
 }) {
   const list = [];
 
@@ -277,8 +283,15 @@ function getPlugins({
     list.push(new CopyWebpackPlugin([{ from: publicDistPath }]));
   }
 
+  list.push(
+    new ManifestPlugin({
+      fileName: manifestFileName || 'asset-manifest.json',
+      publicPath: publicPath
+    }),
+  );
+
   if (env === 'production') {
-    list.push(...getProdPlugins({ publicPath }));
+    list.push(...getProdPlugins());
   }
 
   return list;
@@ -319,16 +332,11 @@ function createHtmlPlugins({ env, srcPath, entry, htmlWebpackPlugin = {} }) {
 }
 
 
-function getProdPlugins({ publicPath }) {
+function getProdPlugins() {
   return [
     /** 定义一些环境变量 **/
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': '"production"'
-    }),
-
-    new ManifestPlugin({
-      fileName: 'asset-manifest.json',
-      publicPath: publicPath
     }),
 
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),

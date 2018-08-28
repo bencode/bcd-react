@@ -1,6 +1,6 @@
 {
   "name": "bcd-react-webpack",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "create webpack config for react application",
   "main": "lib/index.js",
   "scripts": {
