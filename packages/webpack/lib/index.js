@@ -2,6 +2,7 @@ const pathUtil = require('path');
 const fs = require('fs');
 const resolveFrom = require('resolve-from');
 const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
@@ -18,7 +19,7 @@ module.exports = function({
   srcPath, distPath,
   pagesPath, publicPath,
   shouldUseSourceMap,
-  extractCss
+  digest, extractCss
 }) {
   env = env || process.env.NODE_ENV || 'development';
   srcPath = pathUtil.resolve(srcPath);
@@ -32,14 +33,14 @@ module.exports = function({
       : shouldUseSourceMap ? 'source-map' : false,
     output: {
       path: distPath,
-      filename: '[name].js',
-      chunkFilename: '[id]-[chunkhash].js',
+      filename: digest ? '[name].[chunkhash:8].js' : '[name].js',
+      chunkFilename: '[name]-[chunkhash:8].chunk.js',
       publicPath: publicPath || '/'
     },
     module: {
       rules: getRules({ env, extractCss, shouldUseSourceMap })
     },
-    plugins: getPlugins({ env, srcPath, publicPath, extractCss }),
+    plugins: getPlugins({ env, digest, srcPath, publicPath, extractCss }),
     optimization: env === 'development' ? {} : getOptimization({ shouldUseSourceMap }),
     resolve: {
       alias: getAlias(srcPath, { ignore: [pagesPath, publicPath] })
@@ -51,9 +52,21 @@ module.exports = function({
 function getEntry(pagesPath) {
   const pages = fs.readdirSync(pagesPath).filter(name => (/^[-\w]+$/).test(name));
   return pages.reduce((acc, name) => {
-    acc[name] = pathUtil.join(pagesPath, name);
+    const path = pathUtil.join(pagesPath, name);
+    if (resolve(path)) {
+      acc[name] = path;
+    }
     return acc;
   }, {});
+}
+
+
+function resolve(path) {
+  try {
+    return require.resolve(path);
+  } catch (e) {
+    return null;
+  }
 }
 
 
@@ -193,15 +206,22 @@ function getOptimization({ shouldUseSourceMap }) {
 }
 
 
-function getPlugins({ env, srcPath, publicPath, extractCss }) {
+function getPlugins({ env, digest, srcPath, publicPath, extractCss }) {
   const list = [];
 
-  extractCss
-  && list.push(
-    new MiniCssExtractPlugin({
-      filename: '[name].css'
-    })
-  );
+  const templatePath = pathUtil.join(srcPath, 'template.html');
+  if (fs.existsSync(templatePath)) {
+    list.push(createHtmlPlugin({ env, templatePath }));
+  }
+
+  if (extractCss) {
+    list.push(
+      new MiniCssExtractPlugin({
+        filename: digest ? '[name].[contenthash:8].css' : '[name].css',
+        chunkFilename: '[name].[contenthash:8].chunk.css'
+      })
+    );
+  }
 
   const publicDistPath = pathUtil.join(srcPath, 'public');
   if (fs.existsSync(publicDistPath)) {
@@ -213,6 +233,30 @@ function getPlugins({ env, srcPath, publicPath, extractCss }) {
   }
 
   return list;
+}
+
+
+function createHtmlPlugin({ env, templatePath }) {
+  const opts = env === 'development' ? null : {
+    minify: {
+      removeComments: true,
+      collapseWhitespace: true,
+      removeRedundantAttributes: true,
+      useShortDoctype: true,
+      removeEmptyAttributes: true,
+      removeStyleLinkTypeAttributes: true,
+      keepClosingSlash: true,
+      minifyJS: true,
+      minifyCSS: true,
+      minifyURLs: true,
+    }
+  };
+
+  return new HtmlWebpackPlugin({
+    inject: true,
+    template: templatePath,
+    ...opts
+  });
 }
 
 
