@@ -1,6 +1,6 @@
 {
   "name": "bcd-react-app",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "最佳化构建react app",
   "main": "src/index.js",
   "scripts": {
@@ -8,6 +8,9 @@
     "test": "test-mate",
     "cov": "test-mate --coverage"
   },
+  "files": [
+    "src"
+  ],
   "dependencies": {
     "dva-core": "^1.4.0",
     "escape-html": "^1.0.3",
