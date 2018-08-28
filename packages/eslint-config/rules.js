@@ -28,5 +28,8 @@ module.exports = {
   'import/no-extraneous-dependencies': 0,
   'import/no-unresolved': 0,
 
-  'jsx-a11y/href-no-hash': 0
+  'jsx-a11y/href-no-hash': 0,
+
+  'react/prop-types': 1,
+  'class-methods-use-this': 0
 };
