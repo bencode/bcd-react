@@ -13,7 +13,6 @@
   ],
   "dependencies": {
     "dva-core": "^1.4.0",
-    "escape-html": "^1.0.3",
     "react-redux": "^5.0.7"
   },
   "devDependencies": {
@@ -21,7 +20,8 @@
     "react-dom": "^16.4.2",
     "eslint": "^5.4.0",
     "eslint-config-bcd-react": "^2.0.1",
-    "react-test-mate": "^2.0.2"
+    "react-test-mate": "^2.0.2",
+    "escape-html": "^1.0.3"
   },
   "peerDependencies": {
     "react": "^16.4.2",

@@ -11,7 +11,7 @@ export default function({
   const root = mount && getRoot(mount);
   initialState = initialState || (root ? getState(root) : null);
   const app = create({ initialState });
-  models = toArray(model || models);
+  models = toArray(model || models || { namespace: 'app' });
   models.forEach(v => app.model(v));
   app.start();
   const store = app._store;  // eslint-disable-line

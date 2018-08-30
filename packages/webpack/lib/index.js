@@ -50,12 +50,12 @@ module.exports = function({
       rules: getRules({ env, extractCss, assetsDir, shouldUseSourceMap })
     },
     plugins: getPlugins({
-      env, digest, srcPath, publicPath, assetsDir,  // eslint-disable-line
-      extractCss, entry, htmlWebpackPlugin, manifestFileName // eslint-disable-line
+      env, digest, srcPath, publicPath, assetsDir,            // eslint-disable-line
+      extractCss, entry, htmlWebpackPlugin, manifestFileName  // eslint-disable-line
     }),
     optimization: getOptimization({ env, shouldUseSourceMap }),
     resolve: {
-      alias: getAlias(srcPath, { ignore: [pagesPath, publicPath] })
+      alias: { '@': srcPath }
     }
   };
 
@@ -344,18 +344,4 @@ function getProdPlugins() {
     /** 统计打包后的模块构成 **/
     new BundleAnalyzerPlugin({ analyzerMode: 'static' })
   ];
-}
-
-
-function getAlias(srcPath, { ignore }) {
-  const relative = pathUtil.join(srcPath, '..');
-  const dirs = fs.readdirSync(srcPath).filter(name => {
-    const path = pathUtil.join(srcPath, name);
-    return fs.statSync(path).isDirectory()
-      && !ignore.includes(path) && !resolveFrom.silent(relative, name);
-  });
-  return dirs.reduce((acc, name) => {
-    acc[name] = pathUtil.join(srcPath, name);
-    return acc;
-  }, {});
 }
