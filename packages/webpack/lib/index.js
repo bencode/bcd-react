@@ -1,18 +1,20 @@
 const pathUtil = require('path');
 const fs = require('fs');
-const resolveFrom = require('resolve-from');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 
 // refer https://github.com/facebook/create-react-app/blob/next/packages/react-scripts/config/webpack.config.prod.js
+
+/* eslint object-property-newline: 0 */
 
 
 module.exports = function({
@@ -22,6 +24,7 @@ module.exports = function({
   shouldUseSourceMap,
   digest, extractCss = true, manifestFileName,
   htmlWebpackPlugin,
+  swPrecache,
   ...extra
 }) {
   env = env || process.env.NODE_ENV || 'development';
@@ -38,8 +41,8 @@ module.exports = function({
     mode: env,
     bail: true,
     entry,
-    devtool: env === 'development' ? 'cheap-module-source-map'
-      : shouldUseSourceMap ? 'source-map' : false,
+    devtool: env === 'development' ? 'cheap-module-source-map' :
+      shouldUseSourceMap ? 'source-map' : false,
     output: {
       path: distPath,
       filename: digest ? `${assetsDir.js}[name].[chunkhash:8].js` : `${assetsDir.js}[name].js`,
@@ -50,8 +53,9 @@ module.exports = function({
       rules: getRules({ env, extractCss, assetsDir, shouldUseSourceMap })
     },
     plugins: getPlugins({
-      env, digest, srcPath, publicPath, assetsDir,            // eslint-disable-line
-      extractCss, entry, htmlWebpackPlugin, manifestFileName  // eslint-disable-line
+      env, digest, srcPath, publicPath, assetsDir,
+      extractCss, entry, htmlWebpackPlugin, manifestFileName,
+      swPrecache
     }),
     optimization: getOptimization({ env, shouldUseSourceMap }),
     resolve: {
@@ -260,7 +264,8 @@ function getOptimization({ env, shouldUseSourceMap }) {
 
 function getPlugins({
   env, digest, srcPath, publicPath, extractCss,
-  assetsDir, entry, htmlWebpackPlugin, manifestFileName
+  assetsDir, entry, htmlWebpackPlugin, manifestFileName,
+  swPrecache
 }) {
   const list = [];
 
@@ -291,7 +296,7 @@ function getPlugins({
   );
 
   if (env === 'production') {
-    list.push(...getProdPlugins());
+    list.push(...getProdPlugins({ swPrecache }));
   }
 
   return list;
@@ -332,11 +337,41 @@ function createHtmlPlugins({ env, srcPath, entry, htmlWebpackPlugin = {} }) {
 }
 
 
-function getProdPlugins() {
+function getProdPlugins({ swPrecache }) {
   return [
     /** 定义一些环境变量 **/
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': '"production"'
+    }),
+
+    // @see create-react-app/blob/next/packages/react-scripts/config/webpack.config.prod.js
+    new SWPrecacheWebpackPlugin({
+      // By default, a cache-busting query parameter is appended to requests
+      // used to populate the caches, to ensure the responses are fresh.
+      // If a URL is already hashed by Webpack, then there is no concern
+      // about it being stale, and the cache-busting can be skipped.
+      dontCacheBustUrlsMatching: /\.\w{8}\./,
+      filename: 'service-worker.js',
+      logger(message) {
+        if (message.indexOf('Total precache size is') === 0) {
+          // This message occurs for every build and is a bit too noisy.
+          return;
+        }
+        if (message.indexOf('Skipping static resource') === 0) {
+          // This message obscures real errors so we ignore it.
+          // https://github.com/facebook/create-react-app/issues/2612
+          return;
+        }
+        console.log(message); // eslint-disable-line
+      },
+      minify: true,
+      // Don't precache sourcemaps (they're large) and build asset manifest:
+      staticFileGlobsIgnorePatterns: [/\.map$/, /asset-manifest\.json$/],
+      // `navigateFallback` and `navigateFallbackWhitelist` are disabled by default; see
+      // https://github.com/facebook/create-react-app/blob/master/packages/react-scripts/template/README.md#service-worker-considerations
+      // navigateFallback: publicUrl + '/index.html',
+      // navigateFallbackWhitelist: [/^(?!\/__).*/],
+      ...swPrecache
     }),
 
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
