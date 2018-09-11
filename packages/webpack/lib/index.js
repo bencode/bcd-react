@@ -26,7 +26,7 @@ module.exports = function({
   htmlWebpackPlugin,
   swPrecache,
   ...extra
-}) {
+} = {}) {
   env = env || process.env.NODE_ENV || 'development';
   srcPath = pathUtil.resolve(srcPath || 'src');
   distPath = pathUtil.resolve(distPath || 'dist');
@@ -100,6 +100,10 @@ function createDevServerConfig() {
 
 
 function getEntry(pagesPath) {
+  if (!fs.existsSync(pagesPath)) {
+    return {};
+  }
+
   const pages = fs.readdirSync(pagesPath).filter(name => (/^[-\w]+$/).test(name));
   return pages.reduce((acc, name) => {
     const path = pathUtil.join(pagesPath, name);
