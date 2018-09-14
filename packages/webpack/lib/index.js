@@ -297,6 +297,11 @@ function getPlugins({
       fileName: manifestFileName || 'asset-manifest.json',
       publicPath: publicPath
     }),
+
+    /** 定义一些环境变量 **/
+    new webpack.DefinePlugin({
+      'process.env': JSON.stringify(getClientEnv())
+    })
   );
 
   if (env === 'production') {
@@ -304,6 +309,19 @@ function getPlugins({
   }
 
   return list;
+}
+
+
+function getClientEnv() {
+  const map = {};
+  const re = /^REACT_APP_/;
+  for (const k in process.env) {
+    if (re.test(k)) {
+      map[k] = process.env[k];
+    }
+  }
+  map.NODE_ENV = process.env.NODE_ENV || 'development';
+  return map;
 }
 
 
@@ -343,11 +361,6 @@ function createHtmlPlugins({ env, srcPath, entry, htmlWebpackPlugin = {} }) {
 
 function getProdPlugins({ swPrecache }) {
   return [
-    /** 定义一些环境变量 **/
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': '"production"'
-    }),
-
     // @see create-react-app/blob/next/packages/react-scripts/config/webpack.config.prod.js
     new SWPrecacheWebpackPlugin({
       // By default, a cache-busting query parameter is appended to requests
