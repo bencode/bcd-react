@@ -84,6 +84,7 @@ function ensureAssetsDir(assetsDir) {
 
 function createDevServerConfig() {
   return {
+    host: '0.0.0.0',
     disableHostCheck: true,
     proxy: {
       '/*': {
