@@ -21,6 +21,7 @@ module.exports = function({
   env,
   srcPath, distPath, assetsDir,
   pagesPath, publicPath,
+  entry,
   shouldUseSourceMap,
   digest, extractCss = true, manifestFileName,
   htmlWebpackPlugin,
@@ -34,7 +35,7 @@ module.exports = function({
   pagesPath = pagesPath || pathUtil.join(srcPath, 'pages');
   digest = digest === undefined ? env !== 'development' : digest;
 
-  const entry = getEntry(pagesPath);
+  entry = entry || getEntry(pagesPath);
 
   const config = {
     devServer: createDevServerConfig({ distPath }),
