@@ -4,10 +4,8 @@ const env = process.env.NODE_ENV || 'development';
 
 module.exports = createConfig({
   publicPath: env === 'development' ? '/' :
-    // online assets url prefix
-    'https://lesspage.oss-cn-shanghai.aliyuncs.com/'
+    'https://lesspage.oss-cn-shanghai.aliyuncs.com/',
+
+  // manifest: false,
+  // bundleAnalyzer: false
 });
-
-
-
-console.log(module.exports);

@@ -326,11 +326,30 @@ function getClientEnv() {
 
 
 function createHtmlPlugins({ env, srcPath, entry, htmlWebpackPlugin = {} }) {
-  const templatePath = htmlWebpackPlugin.template || pathUtil.join(srcPath, 'template.html');
-  if (!fs.existsSync(templatePath)) {
-    return [];
-  }
+  return Object.keys(entry).map(name => {
+    const template = deduceTemplate(name, entry[name], srcPath);
+    return template ? { name, template } : null;
+  }).filter(v => v).map(item => {
+    return createHtmlPlugin({
+      env,
+      name: item.name,
+      templatePath: item.template,
+      htmlWebpackPlugin
+    });
+  });
+}
 
+
+function deduceTemplate(name, entryPath, srcPath) {
+  const tryPaths = [
+    pathUtil.join(entryPath, 'index.html'),
+    pathUtil.join(srcPath, 'template.html')
+  ];
+  return tryPaths.find(path => fs.existsSync(path));
+}
+
+
+function createHtmlPlugin({ env, name, templatePath, htmlWebpackPlugin }) {
   const opts = {
     inject: true,
     template: templatePath,
@@ -349,12 +368,10 @@ function createHtmlPlugins({ env, srcPath, entry, htmlWebpackPlugin = {} }) {
     ...htmlWebpackPlugin
   };
 
-  return Object.keys(entry).map(name => {
-    return new HtmlWebpackPlugin({
-      filename: `${name}.html`,
-      chunks: ['vendors', name],
-      ...opts
-    });
+  return new HtmlWebpackPlugin({
+    filename: `${name}.html`,
+    chunks: ['vendors', name],
+    ...opts
   });
 }
 
