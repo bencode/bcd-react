@@ -4,7 +4,7 @@ use webpack painless...
 
 ## examples
 
-- [simple webpack](../../examples/webpack)
+- [simple](../../examples/webpack)
 
 
 ## Usage
