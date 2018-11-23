@@ -48,7 +48,7 @@ module.exports = createConfig({
 
 - src/
   - template.html    # tempalte file for HtmlWebpackPlugin
-  - pages/           # deduce webpack entry from pages dir
+  - pages/           # deduce webpack entries from pages dir
     - index/
       - index.js
 
