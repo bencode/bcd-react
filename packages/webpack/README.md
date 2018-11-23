@@ -9,7 +9,7 @@ use webpack painless...
 ### 1. install
 
 ```shell
-npm install --save-dev webpack webpack-cli webpack-dev-server bcd-react-webpack rimraf
+npm install --save-dev webpack webpack-cli webpack-dev-server bcd-react-webpack
 ```
 
 
@@ -18,7 +18,7 @@ npm install --save-dev webpack webpack-cli webpack-dev-server bcd-react-webpack 
 ```json
 {
   "scripts": {
-    "start": "webpack-dev-server --config config/webpack.config.js",
+    "start": "webpack-dev-server --hot --config config/webpack.config.js",
     "build": "NODE_ENV=production webpack --config config/webpack.config.js"
   }
 }
