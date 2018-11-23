@@ -3,6 +3,8 @@
 
 ## Usage
 
+use webpack painless...
+
 
 ### 1. install
 
