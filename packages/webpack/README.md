@@ -47,12 +47,12 @@ module.exports = createConfig({
   - webpack.config.js
 
 - src/
-  - template.html   # tempalte file for HtmlWebpackPlugin
-  - pages/  # deduce webpack entry from pages dir
+  - template.html    # tempalte file for HtmlWebpackPlugin
+  - pages/           # deduce webpack entry from pages dir
     - index/
       - index.js
 
-    - design/ # muti entry support
+    - design/           # muti entry support
       - index.js
-      - index.html  # custom template
+      - index.html         # custom template
 ```
