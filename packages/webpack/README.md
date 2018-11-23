@@ -68,10 +68,17 @@ module.exports = createConfig({
 
   devServer: { ... },        // @see https://webpack.js.org/configuration/dev-server/
   shouldUseSourceMap: true,  // use 'source-map', current default use 'cheap-module-source-map'
+  extractCss: true,
+  
+  srcPath: 'src',            // source dir
+  distPath: 'dist',          // output dir
+  assetsDir: { js: 'js/', css: 'css/', media: 'media/' },   // output assets dir
+  pagesPath: 'pages',
 
+  digest: false,             // in production env, default to true 
+  swPrecache: false,         // disable SWPrecacheWebpackPlugin 
   manifest: false,           // disable manifest file
   manifest: { fileName },    // custom manifest filename
-
   bundleAnalyzer: false,     // disable analyzer plugin
 });
 ```
