@@ -1,7 +1,5 @@
 # bcd-react-webpack
 
-`use webpack no painful...`
-
 
 ## Usage
 
