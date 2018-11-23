@@ -45,7 +45,9 @@ module.exports = createConfig({
 });
 ```
 
-### 4. project structure
+## Detail
+
+### 1. project structure
 
 ```
 - config/
@@ -75,8 +77,7 @@ import Avatar from '@/components/Avatar';
 // import Avatar from '../../../../components/Avatar';
 ```
 
-
-### 5. custom config
+### 2. custom config
 
 
 ```js
