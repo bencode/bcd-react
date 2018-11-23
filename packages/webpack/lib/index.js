@@ -19,6 +19,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 
 module.exports = function({
   env,
+  root,
   srcPath, distPath, assetsDir,
   pagesPath, publicPath,
   entry,
@@ -26,9 +27,11 @@ module.exports = function({
   digest, extractCss = true, manifestFileName,
   htmlWebpackPlugin,
   swPrecache,
+  devServer,
   ...extra
 } = {}) {
   env = env || process.env.NODE_ENV || 'development';
+  root = root || process.cwd();
   srcPath = pathUtil.resolve(srcPath || 'src');
   distPath = pathUtil.resolve(distPath || 'dist');
   assetsDir = ensureAssetsDir(assetsDir);
@@ -38,7 +41,7 @@ module.exports = function({
   entry = entry || getEntry(pagesPath);
 
   const config = {
-    devServer: createDevServerConfig({ distPath }),
+    devServer: createDevServerConfig({ distPath, devServer }),
     mode: env,
     bail: true,
     entry,
@@ -51,7 +54,7 @@ module.exports = function({
       publicPath: publicPath || '/'
     },
     module: {
-      rules: getRules({ env, extractCss, assetsDir, shouldUseSourceMap })
+      rules: getRules({ env, root, extractCss, assetsDir, shouldUseSourceMap })
     },
     plugins: getPlugins({
       env, digest, srcPath, publicPath, assetsDir,
@@ -83,7 +86,7 @@ function ensureAssetsDir(assetsDir) {
 }
 
 
-function createDevServerConfig() {
+function createDevServerConfig({ devServer }) {
   return {
     host: '0.0.0.0',
     disableHostCheck: true,
@@ -96,7 +99,8 @@ function createDevServerConfig() {
           return null;
         }
       }
-    }
+    },
+    ...devServer
   };
 }
 
@@ -123,6 +127,12 @@ function resolve(path) {
   } catch (e) {
     return null;
   }
+}
+
+
+function hasEslintConfig(root) {
+  const files = ['.eslintrc', '.eslintrc.js'];
+  return files.some(name => fs.existsSync(pathUtil.join(root, name)));
 }
 
 
@@ -155,14 +165,15 @@ function getRules(opts) {
       test: /\.jsx?$/,
       enforce: 'pre',
       exclude: [/[/\\\\]node_modules[/\\\\]/],
-      use: [
+      use: hasEslintConfig(opts.root) ?
+      [
         {
           loader: require.resolve('eslint-loader'),
           options: {
             eslintPath: require.resolve('eslint')
           }
         }
-      ]
+      ] : []
     },
     {
       test: /\.jsx?$/,
@@ -233,25 +244,6 @@ function getOptimization({ env, shouldUseSourceMap }) {
 
     minimizer: env === 'development' ? [] : [
       new UglifyJsPlugin({
-        uglifyOptions: {
-          parse: {
-            ecma: 8
-          },
-          compress: {
-            ecma: 5,
-            warnings: false,
-            comparisons: false
-          },
-          mangle: {
-            safari10: true
-          },
-          output: {
-            ecma: 5,
-            comments: false,
-            ascii_only: true
-          }
-        },
-        parallel: true,
         cache: true,
         sourceMap: shouldUseSourceMap
       }),

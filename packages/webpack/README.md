@@ -9,7 +9,7 @@ use webpack painless...
 ### 1. install
 
 ```shell
-npm install --save-dev webpack webpack-cli webpack-dev-server bcd-react-webpack
+npm install --save-dev webpack webpack-cli webpack-dev-server bcd-react-webpack rimraf
 ```
 
 
