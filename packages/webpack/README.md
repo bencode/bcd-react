@@ -52,6 +52,7 @@ module.exports = createConfig({
 
 - src/
   - template.html    # tempalte file for HtmlWebpackPlugin
+
   - pages/           # deduce webpack entries from pages dir
     - index/
       - index.js
@@ -59,8 +60,19 @@ module.exports = createConfig({
     - design/           # muti entry support
       - index.js
       - index.html         # custom template
+      
+  - components/     # arbitrarily dir/packages。
+  - utils/
+
+- package.json
 ```
 
+we also alias '@' for `src` dir.
+ 
+```js
+import Avatar from '@/components/Avatar';   
+// import Avatar from '../../../../components/Avatar';
+```
 
 
 ### 5. custom config
