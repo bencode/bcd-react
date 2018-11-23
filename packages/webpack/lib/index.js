@@ -347,6 +347,8 @@ function deduceTemplate(name, entryPath, srcPath) {
 
 
 function createHtmlPlugin({ env, name, templatePath, htmlWebpackPlugin }) {
+  htmlWebpackPlugin = transformOptions(htmlWebpackPlugin, name);
+
   const opts = {
     inject: true,
     template: templatePath,
@@ -423,4 +425,12 @@ function createSwPrecache(swPrecache) {
     // navigateFallbackWhitelist: [/^(?!\/__).*/],
     ...swPrecache
   });
+}
+
+
+function transformOptions(options, ...args) {
+  if (typeof options === 'function') {
+    options = options.apply(null, args);
+  }
+  return options;
 }
