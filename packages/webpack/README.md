@@ -3,7 +3,8 @@
 `use webpack no painful...`
 
 
-## 使用
+## Usage
+
 
 ### 1. install
 
