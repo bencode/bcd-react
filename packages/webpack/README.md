@@ -1,14 +1,13 @@
 # bcd-react-webpack
 
-
-## Usage
-
 use webpack painless...
 
-
-### examples
+## examples
 
 - [simple webpack](../examples/webpack)
+
+
+## Usage
 
 
 ### 1. install
