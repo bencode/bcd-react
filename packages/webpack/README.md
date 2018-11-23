@@ -6,6 +6,11 @@
 use webpack painless...
 
 
+### examples
+
+- [simple webpack](../examples/webpack)
+
+
 ### 1. install
 
 ```shell
