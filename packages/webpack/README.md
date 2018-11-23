@@ -56,3 +56,22 @@ module.exports = createConfig({
       - index.js
       - index.html         # custom template
 ```
+
+
+
+### 5. custom config
+
+
+```js
+module.exports = createConfig({
+  publicPath: env === 'development' ? '/' : './',
+
+  devServer: { ... },        // @see https://webpack.js.org/configuration/dev-server/
+  shouldUseSourceMap: true,  // use 'source-map', current default use 'cheap-module-source-map'
+
+  manifest: false,           // disable manifest file
+  manifest: { fileName },    // custom manifest filename
+
+  bundleAnalyzer: false,     // disable analyzer plugin
+});
+```

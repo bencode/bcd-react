@@ -24,9 +24,10 @@ module.exports = function({
   pagesPath, publicPath,
   entry,
   shouldUseSourceMap,
-  digest, extractCss = true, manifestFileName,
+  digest, extractCss = true, manifest,
   htmlWebpackPlugin,
   swPrecache,
+  bundleAnalyzer,
   devServer,
   ...extra
 } = {}) {
@@ -58,8 +59,8 @@ module.exports = function({
     },
     plugins: getPlugins({
       env, digest, srcPath, publicPath, assetsDir,
-      extractCss, entry, htmlWebpackPlugin, manifestFileName,
-      swPrecache
+      extractCss, entry, htmlWebpackPlugin, manifest,
+      swPrecache, bundleAnalyzer
     }),
     optimization: getOptimization({ env, shouldUseSourceMap }),
     resolve: {
@@ -262,8 +263,8 @@ function getOptimization({ env, shouldUseSourceMap }) {
 
 function getPlugins({
   env, digest, srcPath, publicPath, extractCss,
-  assetsDir, entry, htmlWebpackPlugin, manifestFileName,
-  swPrecache
+  assetsDir, entry, htmlWebpackPlugin, manifest,
+  swPrecache, bundleAnalyzer
 }) {
   const list = [];
 
@@ -286,12 +287,17 @@ function getPlugins({
     list.push(new CopyWebpackPlugin([{ from: publicDistPath }]));
   }
 
-  list.push(
-    new ManifestPlugin({
-      fileName: manifestFileName || 'asset-manifest.json',
-      publicPath: publicPath
-    }),
+  if (manifest != false) {
+    manifest = manifest || {};
+    list.push(
+      new ManifestPlugin({
+        fileName: manifest.fileName || 'asset-manifest.json',
+        publicPath: publicPath
+      })
+    );
+  }
 
+  list.push(
     /** 定义一些环境变量 **/
     new webpack.DefinePlugin({
       'process.env': JSON.stringify(getClientEnv())
@@ -299,7 +305,7 @@ function getPlugins({
   );
 
   if (env === 'production') {
-    list.push(...getProdPlugins({ swPrecache }));
+    list.push(...getProdPlugins({ swPrecache, bundleAnalyzer }));
   }
 
   return list;
@@ -353,41 +359,54 @@ function createHtmlPlugins({ env, srcPath, entry, htmlWebpackPlugin = {} }) {
 }
 
 
-function getProdPlugins({ swPrecache }) {
-  return [
-    // @see create-react-app/blob/next/packages/react-scripts/config/webpack.config.prod.js
-    new SWPrecacheWebpackPlugin({
-      // By default, a cache-busting query parameter is appended to requests
-      // used to populate the caches, to ensure the responses are fresh.
-      // If a URL is already hashed by Webpack, then there is no concern
-      // about it being stale, and the cache-busting can be skipped.
-      dontCacheBustUrlsMatching: /\.\w{8}\./,
-      filename: 'service-worker.js',
-      logger(message) {
-        if (message.indexOf('Total precache size is') === 0) {
-          // This message occurs for every build and is a bit too noisy.
-          return;
-        }
-        if (message.indexOf('Skipping static resource') === 0) {
-          // This message obscures real errors so we ignore it.
-          // https://github.com/facebook/create-react-app/issues/2612
-          return;
-        }
-        console.log(message); // eslint-disable-line
-      },
-      minify: true,
-      // Don't precache sourcemaps (they're large) and build asset manifest:
-      staticFileGlobsIgnorePatterns: [/\.map$/, /asset-manifest\.json$/],
-      // `navigateFallback` and `navigateFallbackWhitelist` are disabled by default; see
-      // https://github.com/facebook/create-react-app/blob/master/packages/react-scripts/template/README.md#service-worker-considerations
-      // navigateFallback: publicUrl + '/index.html',
-      // navigateFallbackWhitelist: [/^(?!\/__).*/],
-      ...swPrecache
-    }),
-
-    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-
-    /** 统计打包后的模块构成 **/
-    new BundleAnalyzerPlugin({ analyzerMode: 'static' })
+function getProdPlugins({ swPrecache, bundleAnalyzer }) {
+  const plugins = [
+    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
   ];
+
+  if (swPrecache !== false) {
+    plugins.push(createSwPrecache(swPrecache));
+  }
+
+  // 统计打包后的模块构成
+  if (bundleAnalyzer !== false) {
+    plugins.push(
+      new BundleAnalyzerPlugin({ analyzerMode: 'static', ...bundleAnalyzer })
+    );
+  }
+
+  return plugins;
+}
+
+
+function createSwPrecache(swPrecache) {
+  // @see create-react-app/blob/next/packages/react-scripts/config/webpack.config.prod.js
+  return new SWPrecacheWebpackPlugin({
+    // By default, a cache-busting query parameter is appended to requests
+    // used to populate the caches, to ensure the responses are fresh.
+    // If a URL is already hashed by Webpack, then there is no concern
+    // about it being stale, and the cache-busting can be skipped.
+    dontCacheBustUrlsMatching: /\.\w{8}\./,
+    filename: 'service-worker.js',
+    logger(message) {
+      if (message.indexOf('Total precache size is') === 0) {
+        // This message occurs for every build and is a bit too noisy.
+        return;
+      }
+      if (message.indexOf('Skipping static resource') === 0) {
+        // This message obscures real errors so we ignore it.
+        // https://github.com/facebook/create-react-app/issues/2612
+        return;
+      }
+      console.log(message); // eslint-disable-line
+    },
+    minify: true,
+    // Don't precache sourcemaps (they're large) and build asset manifest:
+    staticFileGlobsIgnorePatterns: [/\.map$/, /asset-manifest\.json$/],
+    // `navigateFallback` and `navigateFallbackWhitelist` are disabled by default; see
+    // https://github.com/facebook/create-react-app/blob/master/packages/react-scripts/template/README.md#service-worker-considerations
+    // navigateFallback: publicUrl + '/index.html',
+    // navigateFallbackWhitelist: [/^(?!\/__).*/],
+    ...swPrecache
+  });
 }
