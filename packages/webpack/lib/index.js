@@ -76,9 +76,7 @@ function ensureAssetsDir(assetsDir) {
   if (typeof assetsDir === 'string') {
     return { js: assetsDir, css: assetsDir, media: assetsDir };
   }
-  if (!assetsDir) {
-    return { js: 'js/', css: 'css/', media: 'media/' };
-  }
+  assetsDir = assetsDir || {};
   return {
     js: assetsDir.js || 'js/',
     css: assetsDir.css || 'css/',
