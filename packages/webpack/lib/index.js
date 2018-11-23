@@ -166,8 +166,7 @@ function getRules(opts) {
       test: /\.jsx?$/,
       enforce: 'pre',
       exclude: [/[/\\\\]node_modules[/\\\\]/],
-      use: hasEslintConfig(opts.root) ?
-      [
+      use: hasEslintConfig(opts.root) ? [
         {
           loader: require.resolve('eslint-loader'),
           options: {
@@ -287,7 +286,7 @@ function getPlugins({
     list.push(new CopyWebpackPlugin([{ from: publicDistPath }]));
   }
 
-  if (manifest != false) {
+  if (manifest !== false) {
     manifest = manifest || {};
     list.push(
       new ManifestPlugin({
