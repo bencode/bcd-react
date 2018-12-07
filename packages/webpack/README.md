@@ -1,6 +1,6 @@
 # bcd-react-webpack
 
-use webpack painless...
+Use webpack painless.
 
 
 ## examples
@@ -63,21 +63,51 @@ module.exports = createConfig({
     - design/           # muti entry support
       - index.js
       - index.html         # custom template
-      
+
   - components/     # arbitrarily dir/packages。
   - utils/
 
 - package.json
 ```
 
-we also alias '@' for `src` dir.
- 
+We also alias '@' for `src` dir.
+
 ```js
-import Avatar from '@/components/Avatar';   
+import Avatar from '@/components/Avatar';
 // import Avatar from '../../../../components/Avatar';
 ```
 
-### 2. custom config
+
+### 2. stage
+
+Muti entry pages may slowdown the building in current `webpack-dev-server`,
+use arg `--stage` for only build specify entry page.
+
+You can also config `stage` in config for forcing specify this arg in dev and build phase.
+
+```js
+module.exports = createConfig({
+  ...,
+  stage: true
+});
+```
+
+### in package.json
+
+```json
+{
+  "scripts": {
+    "start": "webpack-dev-server --hot --config config/webpack.config.js"
+  }
+}
+```
+
+```shell
+npm run start --stage mypage
+```
+
+
+### 3. custom config
 
 
 ```js
@@ -87,14 +117,14 @@ module.exports = createConfig({
   devServer: { ... },        // @see https://webpack.js.org/configuration/dev-server/
   shouldUseSourceMap: true,  // use 'source-map', current default use 'cheap-module-source-map'
   extractCss: true,
-  
+
   srcPath: 'src',            // source dir
   distPath: 'dist',          // output dir
   assetsDir: { js: 'js/', css: 'css/', media: 'media/' },   // output assets dir
   pagesPath: 'pages',
 
-  digest: false,             // in production env, default to true 
-  swPrecache: false,         // disable SWPrecacheWebpackPlugin 
+  digest: false,             // in production env, default to true
+  swPrecache: false,         // disable SWPrecacheWebpackPlugin
   manifest: false,           // disable manifest file
   manifest: { fileName },    // custom manifest filename
   bundleAnalyzer: false,     // disable analyzer plugin

@@ -29,6 +29,7 @@ module.exports = function({
   swPrecache,
   bundleAnalyzer,
   devServer,
+  stage,
   ...extra
 } = {}) {
   env = env || process.env.NODE_ENV || 'development';
@@ -40,6 +41,7 @@ module.exports = function({
   digest = digest === undefined ? env !== 'development' : digest;
 
   entry = entry || getEntry(pagesPath);
+  entry = filterEntry(entry, stage);
 
   const config = {
     devServer: createDevServerConfig({ distPath, devServer }),
@@ -168,7 +170,7 @@ function getRules(opts) {
         {
           loader: require.resolve('eslint-loader'),
           options: {
-            eslintPath: require.resolve('eslint')
+            eslintPath: pathUtil.join(opts.root, 'node_modules/eslint')
           }
         }
       ] : []
@@ -433,4 +435,28 @@ function transformOptions(options, ...args) {
     options = options.apply(null, args);
   }
   return options;
+}
+
+
+function filterEntry(entry, useStage) {
+  const chalk = require('chalk');
+  const argv = require('minimist')(process.argv.slice(2));
+
+  let names = argv.stage || [];
+  names = Array.isArray(names) ? names : [names];
+  if (useStage && !names.length) {
+    global.console.log(chalk.red('please specify --state in command.\n  Example: npm start --stage mypage'));
+    process.exit(1);
+  }
+
+  if (!names.length) {
+    return useStage ? entry : {};
+  }
+
+  return names.reduce((acc, name) => {
+    if (entry[name]) {
+      acc[name] = entry[name];
+    }
+    return acc;
+  }, {});
 }
