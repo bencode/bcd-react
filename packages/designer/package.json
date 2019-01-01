@@ -6,19 +6,25 @@
   "scripts": {
     "lint": "eslint src",
     "test": "test-mate",
-    "cov": "test-mate --coverage"
+    "cov": "test-mate --coverage",
+    "dev": "webpack-dev-server --hot --config config/webpack.config.js",
+    "clean": "rimraf dist",
+    "build": "NODE_ENV=production webpack --config config/webpack.config.js"
   },
   "files": [
     "src"
   ],
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
-    "react": "^16.4.2",
-    "react-dom": "^16.4.2",
+    "bcd-react-webpack": "^4.2.1",
     "eslint": "^5.4.0",
     "eslint-config-bcd-react": "^2.0.1",
-    "react-test-mate": "^2.0.2"
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
+    "react-test-mate": "^2.3.0",
+    "webpack": "^4.28.3",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.14"
   },
   "author": "bencode@163.com",
   "license": "MIT",
