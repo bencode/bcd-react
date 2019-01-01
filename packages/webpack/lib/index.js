@@ -41,7 +41,7 @@ module.exports = function({
   digest = digest === undefined ? env !== 'development' : digest;
 
   entry = entry || getEntry(pagesPath);
-  entry = filterEntry(entry, stage);
+  entry = stage ? filterStageEntry(entry) : entry;
 
   const config = {
     devServer: createDevServerConfig({ distPath, devServer }),
@@ -438,19 +438,15 @@ function transformOptions(options, ...args) {
 }
 
 
-function filterEntry(entry, useStage) {
+function filterStageEntry(entry) {
   const chalk = require('chalk');
   const argv = require('minimist')(process.argv.slice(2));
 
   let names = argv.stage || [];
   names = Array.isArray(names) ? names : [names];
-  if (useStage && !names.length) {
+  if (!names.length) {
     global.console.log(chalk.red('please specify --state in command.\n  Example: npm start --stage mypage'));
     process.exit(1);
-  }
-
-  if (!names.length) {
-    return useStage ? entry : {};
   }
 
   return names.reduce((acc, name) => {
