@@ -3,7 +3,7 @@ const fs = require('fs');
 const webpack = require('webpack');
 const merge = require('webpack-merge');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
@@ -243,10 +243,12 @@ function getOptimization({ env, shouldUseSourceMap }) {
     // runtimeChunk: true,
 
     minimizer: env === 'development' ? [] : [
-      new UglifyJsPlugin({
+      new TerserPlugin({
         cache: true,
+        parallel: true,
         sourceMap: shouldUseSourceMap
       }),
+
       new OptimizeCSSAssetsPlugin({
         cssProcessorOptions: {
           parser: require('postcss-safe-parser'),
