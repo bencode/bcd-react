@@ -163,6 +163,10 @@ function getRules(opts) {
       ]
     },
     {
+      test: /\.(woff|woff2|eot|ttf|svg)$/,
+      loader: 'url-loader?limit=8192'
+    },
+    {
       test: /\.jsx?$/,
       enforce: 'pre',
       exclude: [/[/\\\\]node_modules[/\\\\]/],
