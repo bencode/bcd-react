@@ -212,7 +212,12 @@ function getRules(opts) {
 function getStyleLoader({ env, extractCss, processor, shouldUseSourceMap }) {
   const loaders = [
     extractCss ? MiniCssExtractPlugin.loader : require.resolve('style-loader'),
-    require.resolve('css-loader'),
+    {
+      loader: require.resolve('css-loader'),
+      options: {
+        modules: 'global'
+      }
+    },
     {
       loader: require.resolve('postcss-loader'),
       options: {
