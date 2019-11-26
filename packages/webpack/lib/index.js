@@ -164,7 +164,10 @@ function getRules(opts) {
     },
     {
       test: /\.(woff|woff2|eot|ttf|svg)$/,
-      loader: 'url-loader?limit=8192'
+      loader: require.resolve('url-loader'),
+      options: {
+        limit: 8192
+      }
     },
     {
       test: /\.jsx?$/,
