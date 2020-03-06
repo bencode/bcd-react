@@ -11,5 +11,8 @@
   "devDependencies": {
     "stylelint": "^13.2.0"
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
   "license": "MIT"
 }
