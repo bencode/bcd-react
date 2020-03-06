@@ -1,0 +1,18 @@
+{
+  "name": "stylelint-config-bcd",
+  "version": "1.0.0",
+  "dependencies": {
+    "stylelint-config-css-modules": "^2.2.0",
+    "stylelint-config-rational-order": "^0.1.2",
+    "stylelint-config-standard": "^20.0.0",
+    "stylelint-order": "^4.0.0",
+    "stylelint-scss": "^3.14.2"
+  },
+  "devDependencies": {
+    "stylelint": "^13.2.0"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
+  "license": "MIT"
+}

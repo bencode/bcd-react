@@ -1,8 +1,6 @@
 {
   "name": "bcd-react",
-  "version": "2.2.0",
   "description": "不隐藏、无配置、最佳化快速创建react项目",
-  "main": "src/index.js",
   "scripts": {},
   "dependencies": {},
   "devDependencies": {
