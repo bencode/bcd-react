@@ -138,7 +138,7 @@ function hasEslintConfig(root) {
 
 
 function getRules(opts) {
-  return [
+  const rules = [
     {
       test: /\.css$/,
       use: getStyleLoader(opts)
@@ -164,7 +164,7 @@ function getRules(opts) {
     },
     {
       test: /\.(woff|woff2|eot|ttf|svg)$/,
-      loader: require.resolve('url-loader'),
+      use: require.resolve('url-loader'),
       options: {
         limit: 8192
       }
@@ -180,7 +180,7 @@ function getRules(opts) {
             eslintPath: pathUtil.join(opts.root, 'node_modules/eslint')
           }
         }
-      ] : []
+      ] : null
     },
     {
       test: /\.jsx?$/,
@@ -208,11 +208,17 @@ function getRules(opts) {
       ]
     }
   ];
+
+  return rules.filter(v => v);
 }
 //~ getRules
 
 
 function getStyleLoader({ env, extractCss, processor, shouldUseSourceMap }) {
+  if (processor && !packageExists(processor)) {
+    return null;
+  }
+
   const loaders = [
     extractCss ? MiniCssExtractPlugin.loader : require.resolve('style-loader'),
     {
@@ -474,3 +480,14 @@ function filterStageEntry(entry) {
     return acc;
   }, {});
 }
+
+
+function packageExists(name) {
+  try {
+    require.resolve(name);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+

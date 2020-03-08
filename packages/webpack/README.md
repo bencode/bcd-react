@@ -45,6 +45,13 @@ module.exports = createConfig({
 });
 ```
 
+### 4. add sass support
+
+```
+npm install --dev node-sass sass-loader
+```
+
+
 ## Detail
 
 ### 1. project structure
