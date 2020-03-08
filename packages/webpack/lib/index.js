@@ -209,7 +209,7 @@ function getRules(opts) {
     }
   ];
 
-  return rules.filter(v => v);
+  return rules.filter(rule => !!rule.use);
 }
 //~ getRules
 
