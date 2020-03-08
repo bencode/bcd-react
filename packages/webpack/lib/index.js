@@ -218,7 +218,11 @@ function getStyleLoader({ env, extractCss, processor, shouldUseSourceMap }) {
     {
       loader: require.resolve('css-loader'),
       options: {
-        modules: 'global'
+        modules: {
+          mode: 'global',
+          localIdentName: env === 'development' ?
+            '[path][name]__[local]--[hash:base64:5]' : '[hash:base64]'
+        }
       }
     },
     {
