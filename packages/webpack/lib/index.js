@@ -231,7 +231,7 @@ function getStyleLoader({ env, extractCss, processor, shouldUseSourceMap }) {
         modules: {
           mode: 'global',
           localIdentName: env === 'development' ?
-            '[path][name]__[local]--[hash:base64:5]' : '[hash:base64]'
+            '[path][name]__[local]--[hash:base64:5]' : '[local]-[hash:base64:5]'
         }
       }
     },
