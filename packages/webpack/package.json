@@ -1,6 +1,6 @@
 {
   "name": "bcd-react-webpack",
-  "version": "11.0.0-alpha.1",
+  "version": "11.0.0-beta.1",
   "description": "create webpack config for react application",
   "main": "lib/index.js",
   "scripts": {
@@ -13,8 +13,6 @@
     "@babel/preset-env": "^7.1.6",
     "@babel/preset-react": "^7.0.0",
     "@babel/runtime": "^7.0.0",
-    "@types/react": "^16.9.25",
-    "@types/react-dom": "^16.9.5",
     "autoprefixer": "^9.1.5",
     "babel-core": "^7.0.0-0",
     "babel-loader": "^8.0.2",

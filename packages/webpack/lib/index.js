@@ -226,7 +226,7 @@ function getRules(opts) {
           }
         }
       ]
-    },
+    }
   ];
 
   return rules.filter(rule => !!rule.use);
