@@ -1,6 +1,6 @@
 {
   "name": "bcd-react-webpack",
-  "version": "11.0.0-beta.2",
+  "version": "11.0.0-beta.3",
   "description": "create webpack config for react application",
   "main": "lib/index.js",
   "scripts": {
@@ -13,9 +13,10 @@
     "@babel/preset-env": "^7.1.6",
     "@babel/preset-react": "^7.0.0",
     "@babel/runtime": "^7.0.0",
+    "@svgr/webpack": "^5.2.0",
     "autoprefixer": "^9.1.5",
     "babel-core": "^7.0.0-0",
-    "babel-loader": "^8.0.2",
+    "babel-loader": "^8.1.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "copy-webpack-plugin": "^5.0.0",
     "css-loader": "^3.0.0",

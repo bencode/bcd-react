@@ -172,6 +172,17 @@ function getRules(opts) {
       ]
     },
     {
+      test: /\.svg$/,
+      issuer: {
+        test: /\.(js|jsx|ts|tsx)$/
+      },
+      use: [
+        require.resolve('babel-loader'),
+        require.resolve('@svgr/webpack'),
+        require.resolve('url-loader')
+      ]
+    },
+    {
       test: /\.(woff|woff2|eot|ttf|svg)$/,
       use: [
         {
