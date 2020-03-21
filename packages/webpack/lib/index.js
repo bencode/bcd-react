@@ -69,6 +69,7 @@ module.exports = function({
     }),
     optimization: getOptimization({ env, shouldUseSourceMap }),
     resolve: {
+      extensions: ['.ts', '.tsx', '.js', '.jsx'],
       alias: { '@': srcPath }
     }
   };
