@@ -10,7 +10,8 @@ const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-
+const debug = require('debug')('bcd-react-webpack');
+const { packageExists, isFile, isDirectory } = require('./util');
 
 // refer https://github.com/facebook/create-react-app/blob/next/packages/react-scripts/config/webpack.config.prod.js
 
@@ -42,6 +43,8 @@ module.exports = function({
 
   entry = entry || getEntry(pagesPath);
   entry = stage ? filterStageEntry(entry) : entry;
+
+  debug('entry %o', entry);
 
   const config = {
     devServer: createDevServerConfig({ distPath, devServer }),
@@ -113,8 +116,10 @@ function getEntry(pagesPath) {
 
   const pages = fs.readdirSync(pagesPath).filter(name => (/^[-\w]+$/).test(name));
   return pages.reduce((acc, name) => {
-    const path = pathUtil.join(pagesPath, name);
-    if (resolve(path)) {
+    const tryPath = pathUtil.join(pagesPath, name);
+    debug('test entry: %s', tryPath);
+    const path = deduceEntry(tryPath);
+    if (path) {
       acc[name] = path;
     }
     return acc;
@@ -122,12 +127,15 @@ function getEntry(pagesPath) {
 }
 
 
-function resolve(path) {
-  try {
-    return require.resolve(path);
-  } catch (e) {
-    return null;
+function deduceEntry(path) {
+  const exts = ['.js', '.jsx', '.ts', '.tsx'];
+  if (isFile(path)) {
+    return exts.includes(pathUtil.extname(path)) ? path : null;
   }
+  if (isDirectory(path)) {
+    return exts.map(ext => pathUtil.join(path, `index${ext}`)).find(isFile);
+  }
+  return false;
 }
 
 
@@ -174,17 +182,25 @@ function getRules(opts) {
       ]
     },
     {
+      test: /\.tsx?$/,
+      use: require.resolve('ts-loader'),
+      exclude: /node_modules/
+    },
+    {
       test: /\.jsx?$/,
       enforce: 'pre',
       exclude: [/[/\\\\]node_modules[/\\\\]/],
-      use: hasEslintConfig(opts.root) ? [
+      use: [
         {
+          loader: require.resolve('source-map-loader')
+        },
+        hasEslintConfig(opts.root) ? {
           loader: require.resolve('eslint-loader'),
           options: {
             eslintPath: pathUtil.join(opts.root, 'node_modules/eslint')
           }
-        }
-      ] : null
+        } : null
+      ].filter(v => v)
     },
     {
       test: /\.jsx?$/,
@@ -210,7 +226,7 @@ function getRules(opts) {
           }
         }
       ]
-    }
+    },
   ];
 
   return rules.filter(rule => !!rule.use);
@@ -483,15 +499,5 @@ function filterStageEntry(entry) {
     }
     return acc;
   }, {});
-}
-
-
-function packageExists(name) {
-  try {
-    require.resolve(name);
-    return true;
-  } catch (e) {
-    return false;
-  }
 }
 
