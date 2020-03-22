@@ -71,7 +71,7 @@ npm install --dev node-sass sass-loader
 - install type declaration
 
 ```
-npm install -D @types/react @types/react-dom
+npm install -D @types/react @types/react-dom @types/prop-types
 ```
 
 ## Detail
