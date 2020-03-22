@@ -147,6 +147,7 @@ function hasEslintConfig(root) {
 
 
 function getRules(opts) {
+  const reJs = /\.(js|jsx|ts|tsx)$/;
   const rules = [
     {
       test: /\.css$/,
@@ -174,16 +175,19 @@ function getRules(opts) {
     {
       test: /\.svg$/,
       issuer: {
-        test: /\.(js|jsx|ts|tsx)$/
+        test: reJs
       },
-      use: [
-        require.resolve('babel-loader'),
-        require.resolve('@svgr/webpack'),
-        require.resolve('url-loader')
-      ]
+      use: [require.resolve('@svgr/webpack')]
     },
     {
-      test: /\.(woff|woff2|eot|ttf|svg)$/,
+      test: /\.svg$/,
+      issuer: {
+        test: path => !reJs.test(path)
+      },
+      use: [require.resolve('url-loader')]
+    },
+    {
+      test: /\.(woff|woff2|eot|ttf)$/,
       use: [
         {
           loader: require.resolve('url-loader'),
