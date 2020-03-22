@@ -23,15 +23,16 @@ npm install --save-dev webpack webpack-cli webpack-dev-server bcd-react-webpack
 ```json
 {
   "scripts": {
-    "start": "webpack-dev-server --hot --config config/webpack.config.js",
-    "build": "NODE_ENV=production webpack --config config/webpack.config.js"
+    "start": "webpack-dev-server --hot",
+    "build": "NODE_ENV=production webpack"
   }
 }
 ```
 
 ### 3. create webpack config file
 
-create webpack config file `config/webpack.config.js`
+create webpack config file `webpack.config.js`
+
 
 ```js
 const createConfig = require('bcd-react-webpack');
@@ -51,6 +52,27 @@ module.exports = createConfig({
 npm install --dev node-sass sass-loader
 ```
 
+### 5. add typescript support
+
+- add `tsconfig.js`
+
+```json
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "target": "ES2020",
+    "jsx": "react"
+  }
+}
+```
+
+- install type declaration
+
+```
+npm install -D @types/react @types/react-dom @types/prop-types
+```
 
 ## Detail
 
