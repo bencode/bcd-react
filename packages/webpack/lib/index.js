@@ -9,6 +9,7 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const debug = require('debug')('bcd-react-webpack');
 const { packageExists, isFile, isDirectory } = require('./util');
@@ -31,6 +32,7 @@ module.exports = function({
   bundleAnalyzer,
   devServer,
   stage,
+  hardSource,
   ...extra
 } = {}) {
   env = env || process.env.NODE_ENV || 'development';
@@ -65,7 +67,7 @@ module.exports = function({
     plugins: getPlugins({
       env, digest, srcPath, publicPath, assetsDir,
       extractCss, entry, htmlWebpackPlugin, manifest,
-      swPrecache, bundleAnalyzer
+      swPrecache, bundleAnalyzer, hardSource
     }),
     optimization: getOptimization({ env, shouldUseSourceMap }),
     resolve: {
@@ -323,7 +325,7 @@ function getOptimization({ env, shouldUseSourceMap }) {
 function getPlugins({
   env, digest, srcPath, publicPath, extractCss,
   assetsDir, entry, htmlWebpackPlugin, manifest,
-  swPrecache, bundleAnalyzer
+  swPrecache, bundleAnalyzer, hardSource
 }) {
   const list = [];
 
@@ -362,6 +364,10 @@ function getPlugins({
       'process.env': JSON.stringify(getClientEnv())
     })
   );
+
+  if (hardSource !== false) {
+    list.push(new HardSourceWebpackPlugin(hardSource));
+  }
 
   if (env === 'production') {
     list.push(...getProdPlugins({ swPrecache, bundleAnalyzer }));
