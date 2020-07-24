@@ -33,7 +33,11 @@ module.exports = function createPlugins({
 
   const publicDistPath = pathUtil.join(srcPath, 'public');
   if (fs.existsSync(publicDistPath)) {
-    list.push(new CopyWebpackPlugin([{ from: publicDistPath }]));
+    list.push(new CopyWebpackPlugin({
+      patterns: [
+        { from: publicDistPath }
+      ]
+    }));
   }
 
   if (manifest !== false) {

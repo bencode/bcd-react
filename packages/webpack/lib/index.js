@@ -1,6 +1,6 @@
 const pathUtil = require('path');
 const fs = require('fs');
-const merge = require('webpack-merge');
+const { merge } = require('webpack-merge');
 const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const debug = require('debug')('bcd-react-webpack');
