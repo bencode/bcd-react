@@ -1,12 +1,11 @@
 const pathUtil = require('path');
 const fs = require('fs');
 const { merge } = require('webpack-merge');
-const TerserPlugin = require('terser-webpack-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const debug = require('debug')('bcd-react-webpack');
 const { isFile, isDirectory } = require('./util');
 const createRules = require('./createRules');
 const createPlugins = require('./createPlugins');
+const createOptimization = require('./createOptimization');
 
 // refer https://github.com/facebook/create-react-app/blob/next/packages/react-scripts/config/webpack.config.prod.js
 
@@ -63,7 +62,7 @@ module.exports = function({
       extractCss, entry, htmlWebpackPlugin, manifest,
       swPrecache, bundleAnalyzer, hardSource
     }),
-    optimization: getOptimization({ env, shouldUseSourceMap }),
+    optimization: createOptimization({ env, shouldUseSourceMap }),
     resolve: {
       extensions: ['.ts', '.tsx', '.js', '.jsx'],
       alias: { '@': srcPath }
@@ -136,38 +135,6 @@ function deduceEntry(path) {
 }
 
 
-function getOptimization({ env, shouldUseSourceMap }) {
-  return {
-    splitChunks: {
-      chunks: 'async',
-      name: 'vendors',
-      minSize: 30000,
-      maxSize: 0,
-      minChunks: 1,
-      maxAsyncRequests: 5,
-      maxInitialRequests: 3
-    },
-    // runtimeChunk: true,
-
-    minimizer: env === 'development' ? [] : [
-      new TerserPlugin({
-        cache: true,
-        parallel: true,
-        sourceMap: shouldUseSourceMap
-      }),
-
-      new OptimizeCSSAssetsPlugin({
-        cssProcessorOptions: {
-          parser: require('postcss-safe-parser'),
-          discardComments: {
-            removeAll: true
-          }
-        }
-      })
-    ]
-  };
-}
-
 function filterStageEntry(entry) {
   const chalk = require('chalk');
   const argv = require('minimist')(process.argv.slice(2));
@@ -186,4 +153,3 @@ function filterStageEntry(entry) {
     return acc;
   }, {});
 }
-
