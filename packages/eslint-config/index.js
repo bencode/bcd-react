@@ -10,7 +10,7 @@ module.exports = {
   },
   plugins: ['jsx-a11y', 'react', '@typescript-eslint'],
   extends: [
-    require.resolve('eslint-config-airbnb-base'),
+    require.resolve('eslint-config-airbnb-typescript-base'),
     'plugin:react/recommended'
   ],
   env: {
